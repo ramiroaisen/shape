@@ -1,4 +1,10 @@
-use std::{collections::{BTreeMap, BTreeSet, HashMap, HashSet}, rc::Rc, sync::Arc};
+pub use shape_macros::Shape;
+
+use std::{
+  collections::{BTreeMap, BTreeSet, HashMap, HashSet},
+  rc::Rc,
+  sync::Arc,
+};
 
 pub use indexmap;
 use indexmap::{IndexMap, IndexSet};
@@ -11,7 +17,7 @@ pub trait Shape {
 #[derive(Debug, Clone)]
 pub enum ShapeOptions {
   Serialize,
-  Deserialize,  
+  Deserialize,
 }
 
 impl ShapeOptions {
@@ -121,7 +127,7 @@ macro_rules! impl_ty {
         $value
       }
     }
-  }
+  };
 }
 
 impl_ty!(String, Type::String);
@@ -147,34 +153,50 @@ impl<T: Shape + ?Sized> Shape for &T {
   fn shape(options: &ShapeOptions) -> Type {
     T::shape(options)
   }
-} 
-
+}
 
 macro_rules! impl_inner {
   ($ty:ty, $inner:ident) => {
-    impl<$inner> Shape for $ty where $inner: Shape {
+    impl<$inner> Shape for $ty
+    where
+      $inner: Shape,
+    {
       fn shape(options: &ShapeOptions) -> Type {
         <$inner>::shape(options)
       }
     }
+  };
+}
+
+impl<T: Shape> Shape for Option<T> {
+  fn shape(options: &ShapeOptions) -> Type {
+    let inner = T::shape(options);
+    if options.is_serialize() {
+      Type::Or(vec![ inner, Type::Null ])
+    } else {
+      Type::Or(vec![ inner, Type::Null, Type::Undefined ])
+    }
   }
-} 
+}
+
 
 impl_inner!(Box<T>, T);
 impl_inner!(Rc<T>, T);
 impl_inner!(Arc<T>, T);
 
-
 macro_rules! impl_slice {
   ($ty:ty, $inner:ident) => {
-    impl<$inner> Shape for $ty where $inner: Shape {
+    impl<$inner> Shape for $ty
+    where
+      $inner: Shape,
+    {
       fn shape(options: &ShapeOptions) -> Type {
         Type::Array(Array {
           item: Box::new(<$inner>::shape(options)),
         })
       }
     }
-  } 
+  };
 }
 
 impl_slice!([T], T);
@@ -185,7 +207,11 @@ impl_slice!(IndexSet<T>, T);
 
 macro_rules! impl_map {
   ($ty:ty, $key:ident, $value:ident) => {
-    impl<$key, $value> Shape for $ty where $key: Shape, $value: Shape {
+    impl<$key, $value> Shape for $ty
+    where
+      $key: Shape,
+      $value: Shape,
+    {
       fn shape(options: &ShapeOptions) -> Type {
         Type::Record(Record {
           key: Box::new(<$key>::shape(options)),
@@ -193,13 +219,12 @@ macro_rules! impl_map {
         })
       }
     }
-  }
+  };
 }
 
 impl_map!(HashMap<K, V>, K, V);
 impl_map!(BTreeMap<K, V>, K, V);
 impl_map!(IndexMap<K, V>, K, V);
-
 
 macro_rules! impl_tuple {
   ($($ty:ident)*) => {
@@ -229,69 +254,121 @@ macro_rules! impl_tuple_all {
 
 impl_tuple_all!(T1 T2 T3 T4 T5 T6 T7 T8 T9 T10 T11 T12 T13 T14 T15 T16 T17 T18 T19 T20 T21 T22 T23 T24 T25 T26 T27 T28 T29 T30 T31 T32);
 
-impl<T, const N: usize> Shape for [T; N] where T: Shape {
+impl<T, const N: usize> Shape for [T; N]
+where
+  T: Shape,
+{
   fn shape(options: &ShapeOptions) -> Type {
     let inner = T::shape(options);
     let mut items = Vec::with_capacity(N);
     for _ in 0..N {
       items.push(inner.clone());
     }
-    Type::Tuple(Tuple {
-      items,
-      rest: None,
-    })
+    Type::Tuple(Tuple { items, rest: None })
   }
 }
 
-#[cfg(test)]
-pub mod test {
-  use super::*;
+pub trait ToTypescript {
+  fn to_typescript(&self) -> String;
+}
 
-  #[test]
-  fn primitives() {
-    for options in &[ShapeOptions::Serialize, ShapeOptions::Deserialize] {
-      assert_eq!(Type::String, String::shape(options));
-      assert_eq!(Type::String, str::shape(options));
-      assert_eq!(Type::Number, u8::shape(options));
-      assert_eq!(Type::Number, u16::shape(options));
-      assert_eq!(Type::Number, u32::shape(options));
-      assert_eq!(Type::Number, u64::shape(options));
-      assert_eq!(Type::Number, u128::shape(options));
-      assert_eq!(Type::Number, usize::shape(options));
-      assert_eq!(Type::Number, i8::shape(options));
-      assert_eq!(Type::Number, i16::shape(options));
-      assert_eq!(Type::Number, i32::shape(options));
-      assert_eq!(Type::Number, i64::shape(options));
-      assert_eq!(Type::Number, i128::shape(options));
-      assert_eq!(Type::Number, isize::shape(options));
-      assert_eq!(Type::Number, f32::shape(options));
-      assert_eq!(Type::Number, f64::shape(options));
-      assert_eq!(Type::Boolean, bool::shape(options));
-      assert_eq!(Type::Null, <()>::shape(options));
-    }
+impl ToTypescript for Array {
+  fn to_typescript(&self) -> String {
+    format!("Array<{}>", self.item.to_typescript())
   }
+}
 
-  #[test]
-  fn refs() {
-    for options in &[ShapeOptions::Serialize, ShapeOptions::Deserialize] {
-      assert_eq!(Type::String, <&String>::shape(options));
-      assert_eq!(Type::String, <&str>::shape(options));
-      assert_eq!(Type::Number, <&u8>::shape(options));
-      assert_eq!(Type::Number, <&u16>::shape(options));
-      assert_eq!(Type::Number, <&u32>::shape(options));
-      assert_eq!(Type::Number, <&u64>::shape(options));
-      assert_eq!(Type::Number, <&u128>::shape(options));
-      assert_eq!(Type::Number, <&usize>::shape(options));
-      assert_eq!(Type::Number, <&i8>::shape(options));
-      assert_eq!(Type::Number, <&i16>::shape(options));
-      assert_eq!(Type::Number, <&i32>::shape(options));
-      assert_eq!(Type::Number, <&i64>::shape(options));
-      assert_eq!(Type::Number, <&i128>::shape(options));
-      assert_eq!(Type::Number, <&isize>::shape(options));
-      assert_eq!(Type::Number, <&f32>::shape(options));
-      assert_eq!(Type::Number, <&f64>::shape(options));
-      assert_eq!(Type::Boolean, <&bool>::shape(options));
-      assert_eq!(Type::Null, <&()>::shape(options));
+impl ToTypescript for Object {
+  fn to_typescript(&self) -> String {
+    let mut properties = vec![];
+    for (key, prop) in self.properties.iter() {
+      
+      macro_rules! quote {
+        ($key:expr) => {
+          serde_json::to_string($key).unwrap()
+        };
+      }
+
+      let quoted_key = {
+        let first = key.chars().nth(0);
+        match first {
+          None => String::from("\"\""),
+          Some(first) => {
+            if
+              !matches!(first, 'a'..='z' | 'A'..='Z' | '_') ||
+              key.contains(|c| !matches!(c, 'a'..='z' | 'A'..='Z' | '0'..='9' | '_')) 
+            {
+               quote!(key)
+            } else {
+              String::from(key)
+            }
+          }
+        }
+      };
+
+      properties.push(
+        format!(
+          "{readonly}{key}{optional}: {value};",
+          readonly = if prop.readonly { "readonly " } else { "" },
+          key = quoted_key,
+          optional = if prop.optional { "?" } else { "" },
+          value = prop.ty.to_typescript(),
+        )
+      );
     }
+    format!("{{ {} }}", properties.join(" "))
+  }
+}
+
+impl ToTypescript for Record {
+  fn to_typescript(&self) -> String {
+    format!(
+      "{{ [key: {key}]: {value} }}",
+      key = self.key.to_typescript(),
+      value = self.value.to_typescript()
+    )
+  }
+}
+
+impl ToTypescript for Literal {
+  fn to_typescript(&self) -> String {
+      match self {
+        Literal::String(value) => serde_json::to_string(value).unwrap(),
+        Literal::Number(value) => value.to_string(),
+        Literal::Boolean(value) => value.to_string(),
+      }
+  }
+}
+
+impl ToTypescript for Tuple {
+  fn to_typescript(&self) -> String {
+    let inner = self.items.iter().map(|t| t.to_typescript()).collect::<Vec<String>>().join(", ");
+    format!("[{}]", inner)
+  }
+}
+
+impl ToTypescript for Type {
+  fn to_typescript(&self) -> String {
+    match self {
+      Type::String => String::from("string"),
+      Type::Number => String::from("number"),
+      Type::Boolean => String::from("boolean"),
+      Type::Null => String::from("null"),
+      Type::Undefined => String::from("undefined"),
+      Type::Never => String::from("never"),
+      Type::Literal(literal) => literal.to_typescript(),
+      Type::Tuple(tuple) => tuple.to_typescript(),
+      Type::Array(array) => array.to_typescript(),
+      Type::Object(object) => object.to_typescript(),
+      Type::Record(record) => record.to_typescript(),
+      Type::And(types) => {
+        let inner = types.iter().map(|t| t.to_typescript()).collect::<Vec<String>>().join(" & ");
+        format!("({})", inner)
+      }
+      Type::Or(types) => {
+        let inner = types.iter().map(|t| t.to_typescript()).collect::<Vec<String>>().join(" | ");
+        format!("({})", inner)
+      }
+      Type::Custom(custom) => custom.clone(),    }
   }
 }

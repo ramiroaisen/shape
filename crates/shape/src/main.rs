@@ -1,4 +1,3 @@
-use shape_macros::Shape;
 use shape::{Shape, ShapeOptions};
 
 #[derive(Shape)]
