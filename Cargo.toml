@@ -1,0 +1,10 @@
+[workspace]
+
+resolver = "2"
+
+members = [
+  "crates/shape",
+  "crates/shape-macros",
+]
+
+[workspace.dependencies]
