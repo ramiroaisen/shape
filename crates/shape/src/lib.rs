@@ -372,3 +372,18 @@ impl ToTypescript for Type {
       Type::Custom(custom) => custom.clone(),    }
   }
 }
+
+#[doc(hidden)]
+pub mod internal {
+    use std::any::TypeId;
+
+  pub trait IsOption {
+    fn is_option<I: 'static>() -> bool;
+  }
+
+  impl<T: 'static> IsOption for T {
+    fn is_option<I: 'static>() -> bool {
+      TypeId::of::<T>() == TypeId::of::<Option<I>>()
+    }
+  }
+}

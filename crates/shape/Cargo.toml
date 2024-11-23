@@ -11,3 +11,7 @@ path = "src/main.rs"
 indexmap = "2.6.0"
 serde_json = "1.0.133"
 shape-macros = { path = "../shape-macros" }
+
+[dev-dependencies]
+serde = { version = "1.0.215", features = ["derive"] }
+text-diff = "0.4.0"

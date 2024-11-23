@@ -1,7 +1,7 @@
 mod attr;
 
 use attr::{Complex, ContainerAttrs, FieldAttrs, VariantAttrs};
-use darling::{ast::GenericParamExt, usage::GenericsExt, FromAttributes}; 
+use darling::{ast::GenericParamExt, usage::{GenericsExt, UsesTypeParams}, FromAttributes}; 
 use syn::{spanned::Spanned, DeriveInput, LitStr, Variant, WhereClause};
 use quote::quote;
 
@@ -390,6 +390,20 @@ fn fields_named(container_attrs: &ContainerAttrs, variant_attrs: Option<&Variant
       })
     }
   } else {
+    
+    if container_attrs.transparent.is_some() {
+      if fields.named.len() == 1 {
+        let field = fields.named.first().unwrap();
+        let ty = &field.ty;
+        let decl = quote!{
+          <#ty as ::shape::Shape>::shape(options)
+        };
+        return Ok(decl);
+      } else {
+        return Err(darling::Error::custom("transparent structs can only have one field"))
+      }
+    }
+
     let declare_properties = quote! {
       let mut properties = ::shape::indexmap::IndexMap::<String, ::shape::Property>::new();
     };
@@ -400,6 +414,19 @@ fn fields_named(container_attrs: &ContainerAttrs, variant_attrs: Option<&Variant
 
     for field in &fields.named {
       let field_attrs = FieldAttrs::from_attributes(&field.attrs)?;
+
+      // TODO: there must be a better way to do this
+      let is_option = match &field.ty {
+        syn::Type::Path(path) => {
+          match path.path.segments.iter().last() {
+            Some(last) => {
+              last.ident == "Option"  
+            }
+            None => false,
+          }
+        },
+        _ => false,
+      };
 
       if field_attrs.skip.is_some() {
         continue;
@@ -425,7 +452,8 @@ fn fields_named(container_attrs: &ContainerAttrs, variant_attrs: Option<&Variant
             false
           }
         } else {
-          if #field_has_default || #container_has_default {
+          // options are always optional in deserialize mode
+          if #field_has_default || #container_has_default || #is_option {
             true
           } else {
             false
@@ -634,10 +662,36 @@ fn join_enum_fields(
   } else {
     match &container_attrs.tag {
       Some(tag) => {
-        let tag = LitStr::new(&tag, variant.span());
+        let tag = LitStr::new(tag, variant.span());
         match &container_attrs.content {
           Some(content) => {
-            let content = LitStr::new(&content, variant.span());
+            let content = LitStr::new(content, variant.span());
+            quote! {
+              ::shape::Type::Object(Object {
+                properties: ::shape::indexmap::IndexMap::from([
+                  (
+                    String::from(#tag),
+                    ::shape::Property {
+                      readonly: false,
+                      optional: false,
+                      ty: ::shape::Type::Literal(::shape::Literal::String(String::from(#get_name)))
+                    }
+                  ),
+
+                  (
+                    String::from(#content),
+                    ::shape::Property {
+                      readonly: false,
+                      optional: false,
+                      ty: #fields
+                    }
+                  )
+                ])
+              }),
+            }
+          }
+          
+          None => {
             quote! {
               ::shape::Type::And(vec![
                 ::shape::Type::Object(Object {
@@ -649,47 +703,6 @@ fn join_enum_fields(
                         optional: false,
                         ty: ::shape::Type::Literal(::shape::Literal::String(String::from(#get_name)))
                       }
-                    )
-                  ])
-                }),
-
-                ::shape::Type::And(vec![
-                  ::shape::Type::Object(Object {
-                    properties: ::shape::indexmap::IndexMap::from([
-                      (
-                        String::from(#content),
-                        ::shape::Property {
-                          readonly: false,
-                          optional: false,
-                          ty: ::shape::Type::Object(::shape::Object {
-                            properties: ::shape::indexmap::IndexMap::from([
-                              (
-                                String::from(#content),
-                                ::shape::Property {
-                                  readonly: false,
-                                  optional: false,
-                                  ty: #fields,
-                                }
-                              )
-                            ])
-                          })
-                        }
-                      )
-                    ])
-                  }),
-                ])
-              ])
-            }
-          }
-          
-          None => {
-            quote! {
-              ::shape::Type::And(vec![
-                ::shape::Type::Object(Object {
-                  properties: ::shape::indexmap::IndexMap::from([
-                    (
-                      String::from(#tag),
-                      ::shape::Type::Literal(::shape::Literal::String(String::from(#get_name)))
                     )
                   ])
                 }),
