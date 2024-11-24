@@ -66,40 +66,6 @@ pub struct Object {
   pub properties: IndexMap<String, Property>,
 }
 
-impl Object {
-  /// Make all properties in this Object optional
-  pub fn partial(mut self) -> Self {
-    for (_, prop) in self.properties.iter_mut() {
-      prop.optional = true;
-    }
-    self
-  }
-
-  /// Make all properties in this Object non-optional
-  pub fn required(mut self) -> Self {
-    for (_, prop) in self.properties.iter_mut() {
-      prop.optional = false;
-    }
-    self
-  }
-
-  /// Make all properties in this Object readonly
-  pub fn readonly(mut self) -> Self {
-    for (_, prop) in self.properties.iter_mut() {
-      prop.readonly = true;
-    }
-    self
-  }
-
-  /// Make all properties in this Object non-readonly
-  pub fn writable(mut self) -> Self {
-    for (_, prop) in self.properties.iter_mut() {
-      prop.readonly = false;
-    }
-    self
-  }
-}
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct Record {
   pub key: Box<Type>,
@@ -179,16 +145,14 @@ impl<T: Shape> Shape for Option<T> {
   }
 }
 
-
+// TODO: add generics for Alloc in nightly
 impl_inner!(Box<T>, T);
 impl_inner!(Rc<T>, T);
 impl_inner!(Arc<T>, T);
 
 macro_rules! impl_slice {
-  ($ty:ty, $inner:ident) => {
-    impl<$inner> Shape for $ty
-    where
-      $inner: Shape,
+  ($inner:ty, $($tt:tt)*) => {
+    $($tt)*
     {
       fn shape(options: &ShapeOptions) -> Type {
         Type::Array(Array {
@@ -199,32 +163,31 @@ macro_rules! impl_slice {
   };
 }
 
-impl_slice!([T], T);
-impl_slice!(Vec<T>, T);
-impl_slice!(HashSet<T>, T);
-impl_slice!(BTreeSet<T>, T);
-impl_slice!(IndexSet<T>, T);
+// TODO: add generics for Alloc in nightly
+impl_slice!(T, impl<T: Shape> Shape for [T]);
+impl_slice!(T, impl<T: Shape> Shape for Vec<T>);
+impl_slice!(T, impl<T: Shape, H> Shape for HashSet<T, H>);
+impl_slice!(T, impl<T: Shape, H> Shape for IndexSet<T, H>);
+impl_slice!(T, impl<T: Shape> Shape for BTreeSet<T>);
 
 macro_rules! impl_map {
-  ($ty:ty, $key:ident, $value:ident) => {
-    impl<$key, $value> Shape for $ty
-    where
-      $key: Shape,
-      $value: Shape,
+  ($k:ty, $v:ty, $($tt:tt)*) => {
+    $($tt)*
     {
       fn shape(options: &ShapeOptions) -> Type {
         Type::Record(Record {
-          key: Box::new(<$key>::shape(options)),
-          value: Box::new(<$value>::shape(options)),
+          key: Box::new(<$k>::shape(options)),
+          value: Box::new(<$v>::shape(options)),
         })
       }
     }
   };
 }
 
-impl_map!(HashMap<K, V>, K, V);
-impl_map!(BTreeMap<K, V>, K, V);
-impl_map!(IndexMap<K, V>, K, V);
+// TODO: add generics for Alloc in nightly
+impl_map!(K, V, impl<K: Shape, V: Shape, H> Shape for HashMap<K, V, H>);
+impl_map!(K, V, impl<K: Shape, V: Shape, H> Shape for IndexMap<K, V, H>);
+impl_map!(K, V, impl<K: Shape, V: Shape> Shape for BTreeMap<K, V>);
 
 macro_rules! impl_tuple {
   ($($ty:ident)*) => {
@@ -373,17 +336,17 @@ impl ToTypescript for Type {
   }
 }
 
-#[doc(hidden)]
-pub mod internal {
-    use std::any::TypeId;
+// #[doc(hidden)]
+// pub mod internal {
+//     use std::any::TypeId;
 
-  pub trait IsOption {
-    fn is_option<I: 'static>() -> bool;
-  }
+//   pub trait IsOption {
+//     fn is_option<I: 'static>() -> bool;
+//   }
 
-  impl<T: 'static> IsOption for T {
-    fn is_option<I: 'static>() -> bool {
-      TypeId::of::<T>() == TypeId::of::<Option<I>>()
-    }
-  }
-}
+//   impl<T: 'static> IsOption for T {
+//     fn is_option<I: 'static>() -> bool {
+//       TypeId::of::<T>() == TypeId::of::<Option<I>>()
+//     }
+//   }
+// }

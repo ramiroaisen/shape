@@ -1,69 +1,8 @@
+mod common;
+
 use indexmap::IndexMap;
 use shape::{Array, Literal, Object, Property, Shape, ShapeOptions, Tuple, Type};
-use text_diff::print_diff;
 
-macro_rules! eq {
-  ($a:expr, $b:expr) => {
-    let a = &$a;
-    let b = &$b;
-
-    let debug_a = format!("{:?}", &a);
-    let debug_b = format!("{:?}", &b);
-
-    if a != b {
-      print_diff(&debug_a, &debug_b, " ");
-      panic!("$a != $b");
-    }
-  };
-}
-
-#[test]
-fn primitives() {
-  for options in [ShapeOptions::Serialize, ShapeOptions::Deserialize] {
-    eq!(Type::String, String::shape(&options));
-    eq!(Type::String, str::shape(&options));
-    eq!(Type::Number, u8::shape(&options));
-    eq!(Type::Number, u16::shape(&options));
-    eq!(Type::Number, u32::shape(&options));
-    eq!(Type::Number, u64::shape(&options));
-    eq!(Type::Number, u128::shape(&options));
-    eq!(Type::Number, usize::shape(&options));
-    eq!(Type::Number, i8::shape(&options));
-    eq!(Type::Number, i16::shape(&options));
-    eq!(Type::Number, i32::shape(&options));
-    eq!(Type::Number, i64::shape(&options));
-    eq!(Type::Number, i128::shape(&options));
-    eq!(Type::Number, isize::shape(&options));
-    eq!(Type::Number, f32::shape(&options));
-    eq!(Type::Number, f64::shape(&options));
-    eq!(Type::Boolean, bool::shape(&options));
-    eq!(Type::Null, <()>::shape(&options));
-  }
-}
-
-#[test]
-fn refs() {
-  for options in [ShapeOptions::Serialize, ShapeOptions::Deserialize] {
-    eq!(Type::String, <&String>::shape(&options));
-    eq!(Type::String, <&str>::shape(&options));
-    eq!(Type::Number, <&u8>::shape(&options));
-    eq!(Type::Number, <&u16>::shape(&options));
-    eq!(Type::Number, <&u32>::shape(&options));
-    eq!(Type::Number, <&u64>::shape(&options));
-    eq!(Type::Number, <&u128>::shape(&options));
-    eq!(Type::Number, <&usize>::shape(&options));
-    eq!(Type::Number, <&i8>::shape(&options));
-    eq!(Type::Number, <&i16>::shape(&options));
-    eq!(Type::Number, <&i32>::shape(&options));
-    eq!(Type::Number, <&i64>::shape(&options));
-    eq!(Type::Number, <&i128>::shape(&options));
-    eq!(Type::Number, <&isize>::shape(&options));
-    eq!(Type::Number, <&f32>::shape(&options));
-    eq!(Type::Number, <&f64>::shape(&options));
-    eq!(Type::Boolean, <&bool>::shape(&options));
-    eq!(Type::Null, <&()>::shape(&options));
-  }
-}
 #[test]
 fn simple_struct() {
   #[allow(unused)]
@@ -243,6 +182,7 @@ fn struct_with_flatten() {
 #[test]
 fn newtype() {
   #[derive(Shape)]
+  #[allow(unused)]
   struct Number(pub i32);
 
   let expected = Type::Number;
@@ -250,6 +190,7 @@ fn newtype() {
   eq!(Number::shape(&ShapeOptions::Deserialize), expected);
 
   #[derive(Shape)]
+  #[allow(unused)]
   struct Str<'a>(&'a str);
 
   let expected = Type::String;
@@ -260,6 +201,7 @@ fn newtype() {
 #[test]
 fn enum_untagged() {
   #[derive(Shape)]
+  #[allow(unused)]
   #[serde(untagged)]
   enum Enum {
     A,
@@ -304,6 +246,7 @@ fn enum_untagged() {
 #[test]
 fn enum_internally_tagged() {
   #[derive(Shape)]
+  #[allow(unused)]
   #[serde(tag = "type")]
   enum Enum {
     A,
@@ -397,6 +340,7 @@ fn enum_internally_tagged() {
 #[test]
 fn enum_adjacently_tagged() {
   #[derive(Shape)]
+  #[allow(unused)]
   #[serde(tag = "type", content = "content")]
   enum Enum {
     A,
@@ -511,9 +455,10 @@ fn enum_adjacently_tagged() {
 #[test]
 fn struct_with_rename() {
   #[derive(Shape)]
-  #[serde(rename_all = "snake_case")]
   #[allow(unused)]
-  struct RenamedFields {
+  #[allow(non_snake_case)]
+  #[serde(rename_all = "snake_case")]
+  struct RenamedFields { 
     originalField: String,
     anotherField: i32,
   }
@@ -695,29 +640,6 @@ fn enum_with_rename_all() {
   eq!(RenamedEnum::shape(&ShapeOptions::Deserialize), expected);
 }
 
-#[test]
-fn struct_with_field_aliases() {
-  #[derive(Shape)]
-  #[allow(unused)]
-  struct FieldAliases {
-    #[serde(alias = "alt_name")]
-    original_field: String,
-  }
-
-  let expected = Type::Object(Object {
-    properties: IndexMap::from([(
-      "original_field".into(),
-      Property {
-        ty: Type::String,
-        optional: false,
-        readonly: false,
-      },
-    )]),
-  });
-
-  eq!(FieldAliases::shape(&ShapeOptions::Serialize), expected);
-  eq!(FieldAliases::shape(&ShapeOptions::Deserialize), expected);
-}
 
 #[test]
 fn struct_with_skip_and_rename() {
@@ -749,6 +671,7 @@ fn struct_with_skip_and_rename() {
 fn enum_with_rename() {
   #[derive(Shape)]
   #[serde(rename_all = "UPPERCASE")]
+  #[allow(unused)]
   enum RenamedEnum {
     FirstVariant,
     SecondVariant,
@@ -767,6 +690,7 @@ fn enum_with_rename() {
 fn enum_with_skip_variant() {
   #[derive(Shape)]
   #[serde(tag = "type")]
+  #[allow(unused)]
   enum EnumWithSkip {
     Included,
     #[serde(skip)]
@@ -792,6 +716,7 @@ fn enum_with_skip_variant() {
 fn enum_with_skip_serializing_variant() {
   #[derive(Shape)]
   #[serde(tag = "type")]
+  #[allow(unused)]
   enum EnumSkipSerializing {
     AlwaysSerialized,
     #[serde(skip_serializing)]
@@ -818,6 +743,7 @@ fn enum_with_skip_serializing_variant() {
 #[test]
 fn enum_with_skip_deserializing_variant() {
   #[derive(Shape)]
+  #[allow(unused)]
   #[serde(tag = "type")]
   enum EnumSkipDeserializing {
     AlwaysDeserialized,
@@ -845,6 +771,7 @@ fn enum_with_skip_deserializing_variant() {
 #[test]
 fn enum_with_internal_tagging() {
   #[derive(Shape)]
+  #[allow(unused)]
   #[serde(tag = "tag")]
   enum InternallyTaggedEnum {
     Unit,
@@ -916,6 +843,7 @@ fn enum_with_internal_tagging() {
 #[test]
 fn enum_with_adjacently_tagged() {
   #[derive(Shape)]
+  #[allow(unused)]
   #[serde(tag = "type", content = "data")]
   enum AdjacentlyTaggedEnum {
     VariantOne(i32),
@@ -987,6 +915,7 @@ fn enum_with_adjacently_tagged() {
 #[test]
 fn enum_with_untagged() {
   #[derive(Shape)]
+  #[allow(unused)]
   #[serde(untagged)]
   enum UntaggedEnum {
     VariantOne(i32),
@@ -1002,11 +931,13 @@ fn enum_with_untagged() {
 #[test]
 fn enum_with_flatten() {
   #[derive(Shape)]
+  #[allow(unused)]
   struct FlattenedStruct {
     field: String,
   }
 
   #[derive(Shape)]
+  #[allow(unused)]
   #[serde(untagged)]
   enum EnumWithFlatten {
     VariantA {
@@ -1113,6 +1044,7 @@ fn enum_with_complex_variants() {
 #[test]
 fn option_type_serialization() {
   #[derive(Shape)]
+  #[allow(unused)]
   struct TestStruct {
     optional_field: Option<i32>,
   }
@@ -1134,6 +1066,7 @@ fn option_type_serialization() {
 #[test]
 fn option_type_deserialization() {
   #[derive(Shape)]
+  #[allow(unused)]
   struct TestStruct {
     optional_field: Option<i32>,
   }
@@ -1177,6 +1110,7 @@ fn nested_option_serialization() {
 #[test]
 fn nested_option_deserialization() {
   #[derive(Shape)]
+  #[allow(unused)]
   struct NestedStruct {
     nested_field: Option<Option<String>>,
   }
@@ -1232,6 +1166,7 @@ fn option_in_enum_serialization() {
 fn option_in_enum_deserialization() {
   #[derive(Shape)]
   #[serde(untagged)]
+  #[allow(unused)]
   enum TestEnum {
     Variant { field: Option<u32> },
   }
@@ -1255,6 +1190,7 @@ fn option_in_enum_deserialization() {
 #[test]
 fn option_in_vec_serialization() {
   #[derive(Shape)]
+  #[allow(unused)]
   struct VecOptionStruct {
     fields: Vec<Option<i64>>,
   }
@@ -1278,6 +1214,7 @@ fn option_in_vec_serialization() {
 #[test]
 fn option_in_vec_deserialization() {
   #[derive(Shape)]
+  #[allow(unused)]
   struct VecOptionStruct {
     fields: Vec<Option<i64>>,
   }
