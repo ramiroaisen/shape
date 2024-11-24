@@ -332,7 +332,7 @@ fn fields_unnamed(container_attrs: &ContainerAttrs, _variant_attrs: Option<&Vari
       let mut list = vec![];
     };
 
-    for field in fields.unnamed.iter() { 
+    for field in &fields.unnamed { 
       let field_attrs = FieldAttrs::from_attributes(&field.attrs)?;
 
       if field_attrs.skip.is_some() {
