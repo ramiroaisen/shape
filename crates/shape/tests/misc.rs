@@ -42,8 +42,8 @@ fn simple_struct() {
     ]),
   });
 
-  eq!(Simple::shape(&ShapeOptions::Serialize), expected);
-  eq!(Simple::shape(&ShapeOptions::Deserialize), expected);
+  eq!(Simple::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Simple::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -121,8 +121,8 @@ fn struct_with_serde_attrs() {
     ]),
   });
 
-  eq!(SerdeTest::shape(&ShapeOptions::Serialize), expected);
-  eq!(SerdeTest::shape(&ShapeOptions::Deserialize), expected);
+  eq!(SerdeTest::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(SerdeTest::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -175,8 +175,8 @@ fn struct_with_flatten() {
     }),
   ]);
 
-  eq!(Wrapper::shape(&ShapeOptions::Serialize), expected);
-  eq!(Wrapper::shape(&ShapeOptions::Deserialize), expected);
+  eq!(Wrapper::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Wrapper::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -186,16 +186,16 @@ fn newtype() {
   struct Number(pub i32);
 
   let expected = Type::Number;
-  eq!(Number::shape(&ShapeOptions::Serialize), expected);
-  eq!(Number::shape(&ShapeOptions::Deserialize), expected);
+  eq!(Number::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Number::shape(&ShapeOptions::for_deserialize()), expected);
 
   #[derive(Shape)]
   #[allow(unused)]
   struct Str<'a>(&'a str);
 
   let expected = Type::String;
-  eq!(String::shape(&ShapeOptions::Serialize), expected);
-  eq!(String::shape(&ShapeOptions::Deserialize), expected);
+  eq!(String::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(String::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -239,8 +239,8 @@ fn enum_untagged() {
     }),
   ]);
 
-  eq!(Enum::shape(&ShapeOptions::Serialize), expected);
-  eq!(Enum::shape(&ShapeOptions::Deserialize), expected);
+  eq!(Enum::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Enum::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -333,8 +333,8 @@ fn enum_internally_tagged() {
     ]),
   ]);
 
-  eq!(Enum::shape(&ShapeOptions::Serialize), expected);
-  eq!(Enum::shape(&ShapeOptions::Deserialize), expected);
+  eq!(Enum::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Enum::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -448,8 +448,8 @@ fn enum_adjacently_tagged() {
     }),
   ]);
 
-  eq!(Enum::shape(&ShapeOptions::Serialize), expected);
-  eq!(Enum::shape(&ShapeOptions::Deserialize), expected);
+  eq!(Enum::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Enum::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -484,8 +484,8 @@ fn struct_with_rename() {
     ]),
   });
 
-  eq!(RenamedFields::shape(&ShapeOptions::Serialize), expected);
-  eq!(RenamedFields::shape(&ShapeOptions::Deserialize), expected);
+  eq!(RenamedFields::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(RenamedFields::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -509,7 +509,7 @@ fn struct_with_skip_serializing() {
     )]),
   });
 
-  eq!(SkipSerializing::shape(&ShapeOptions::Serialize), expected);
+  eq!(SkipSerializing::shape(&ShapeOptions::for_serialize()), expected);
 }
 
 #[test]
@@ -534,7 +534,7 @@ fn struct_with_skip_deserializing() {
   });
 
   eq!(
-    SkipDeserializing::shape(&ShapeOptions::Deserialize),
+    SkipDeserializing::shape(&ShapeOptions::for_deserialize()),
     expected
   );
 }
@@ -571,11 +571,11 @@ fn struct_with_default() {
   });
 
   eq!(
-    DefaultField::shape(&ShapeOptions::Serialize),
+    DefaultField::shape(&ShapeOptions::for_serialize()),
     expected_serialize
   );
   eq!(
-    DefaultField::shape(&ShapeOptions::Deserialize),
+    DefaultField::shape(&ShapeOptions::for_deserialize()),
     expected_deserialize
   );
 }
@@ -600,7 +600,7 @@ fn struct_with_skip_serializing_if() {
     )]),
   });
 
-  eq!(SkipIfField::shape(&ShapeOptions::Serialize), expected);
+  eq!(SkipIfField::shape(&ShapeOptions::for_serialize()), expected);
 }
 
 #[test]
@@ -614,9 +614,9 @@ fn struct_with_transparent() {
 
   let expected = Type::String;
 
-  eq!(TransparentStruct::shape(&ShapeOptions::Serialize), expected);
+  eq!(TransparentStruct::shape(&ShapeOptions::for_serialize()), expected);
   eq!(
-    TransparentStruct::shape(&ShapeOptions::Deserialize),
+    TransparentStruct::shape(&ShapeOptions::for_deserialize()),
     expected
   );
 }
@@ -636,8 +636,8 @@ fn enum_with_rename_all() {
     Type::Literal(Literal::String("VariantTwo".into())),
   ]);
 
-  eq!(RenamedEnum::shape(&ShapeOptions::Serialize), expected);
-  eq!(RenamedEnum::shape(&ShapeOptions::Deserialize), expected);
+  eq!(RenamedEnum::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(RenamedEnum::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 
@@ -663,8 +663,8 @@ fn struct_with_skip_and_rename() {
     )]),
   });
 
-  eq!(SkipAndRename::shape(&ShapeOptions::Serialize), expected);
-  eq!(SkipAndRename::shape(&ShapeOptions::Deserialize), expected);
+  eq!(SkipAndRename::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(SkipAndRename::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -682,8 +682,8 @@ fn enum_with_rename() {
     Type::Literal(Literal::String("SECONDVARIANT".into())),
   ]);
 
-  eq!(RenamedEnum::shape(&ShapeOptions::Serialize), expected);
-  eq!(RenamedEnum::shape(&ShapeOptions::Deserialize), expected);
+  eq!(RenamedEnum::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(RenamedEnum::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -708,8 +708,8 @@ fn enum_with_skip_variant() {
     )]),
   })]);
 
-  eq!(EnumWithSkip::shape(&ShapeOptions::Serialize), expected);
-  eq!(EnumWithSkip::shape(&ShapeOptions::Deserialize), expected);
+  eq!(EnumWithSkip::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(EnumWithSkip::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -735,7 +735,7 @@ fn enum_with_skip_serializing_variant() {
   })]);
 
   eq!(
-    EnumSkipSerializing::shape(&ShapeOptions::Serialize),
+    EnumSkipSerializing::shape(&ShapeOptions::for_serialize()),
     expected
   );
 }
@@ -763,7 +763,7 @@ fn enum_with_skip_deserializing_variant() {
   })]);
 
   eq!(
-    EnumSkipDeserializing::shape(&ShapeOptions::Deserialize),
+    EnumSkipDeserializing::shape(&ShapeOptions::for_deserialize()),
     expected
   );
 }
@@ -831,11 +831,11 @@ fn enum_with_internal_tagging() {
   ]);
 
   eq!(
-    InternallyTaggedEnum::shape(&ShapeOptions::Serialize),
+    InternallyTaggedEnum::shape(&ShapeOptions::for_serialize()),
     expected
   );
   eq!(
-    InternallyTaggedEnum::shape(&ShapeOptions::Deserialize),
+    InternallyTaggedEnum::shape(&ShapeOptions::for_deserialize()),
     expected
   );
 }
@@ -903,11 +903,11 @@ fn enum_with_adjacently_tagged() {
   ]);
 
   eq!(
-    AdjacentlyTaggedEnum::shape(&ShapeOptions::Serialize),
+    AdjacentlyTaggedEnum::shape(&ShapeOptions::for_serialize()),
     expected
   );
   eq!(
-    AdjacentlyTaggedEnum::shape(&ShapeOptions::Deserialize),
+    AdjacentlyTaggedEnum::shape(&ShapeOptions::for_deserialize()),
     expected
   );
 }
@@ -924,8 +924,8 @@ fn enum_with_untagged() {
 
   let expected = Type::Or(vec![Type::Number, Type::String]);
 
-  eq!(UntaggedEnum::shape(&ShapeOptions::Serialize), expected);
-  eq!(UntaggedEnum::shape(&ShapeOptions::Deserialize), expected);
+  eq!(UntaggedEnum::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(UntaggedEnum::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -977,8 +977,8 @@ fn enum_with_flatten() {
     }),
   ]);
 
-  eq!(EnumWithFlatten::shape(&ShapeOptions::Serialize), expected);
-  eq!(EnumWithFlatten::shape(&ShapeOptions::Deserialize), expected);
+  eq!(EnumWithFlatten::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(EnumWithFlatten::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -1037,8 +1037,8 @@ fn enum_with_complex_variants() {
     }),
   ]);
 
-  eq!(ComplexEnum::shape(&ShapeOptions::Serialize), expected);
-  eq!(ComplexEnum::shape(&ShapeOptions::Deserialize), expected);
+  eq!(ComplexEnum::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(ComplexEnum::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -1060,7 +1060,7 @@ fn option_type_serialization() {
     )]),
   });
 
-  eq!(TestStruct::shape(&ShapeOptions::Serialize), expected);
+  eq!(TestStruct::shape(&ShapeOptions::for_serialize()), expected);
 }
 
 #[test]
@@ -1082,7 +1082,7 @@ fn option_type_deserialization() {
     )]),
   });
 
-  eq!(TestStruct::shape(&ShapeOptions::Deserialize), expected);
+  eq!(TestStruct::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -1104,7 +1104,7 @@ fn nested_option_serialization() {
     )]),
   });
 
-  eq!(NestedStruct::shape(&ShapeOptions::Serialize), expected);
+  eq!(NestedStruct::shape(&ShapeOptions::for_serialize()), expected);
 }
 
 #[test]
@@ -1134,7 +1134,7 @@ fn nested_option_deserialization() {
     )]),
   });
 
-  eq!(NestedStruct::shape(&ShapeOptions::Deserialize), expected);
+  eq!(NestedStruct::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -1159,7 +1159,7 @@ fn option_in_enum_serialization() {
     })
   ]);
 
-  eq!(TestEnum::shape(&ShapeOptions::Serialize), expected);
+  eq!(TestEnum::shape(&ShapeOptions::for_serialize()), expected);
 }
 
 #[test]
@@ -1184,7 +1184,7 @@ fn option_in_enum_deserialization() {
     }
   )]);
 
-  eq!(TestEnum::shape(&ShapeOptions::Deserialize), expected);
+  eq!(TestEnum::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -1208,7 +1208,7 @@ fn option_in_vec_serialization() {
     )])
   });
 
-  eq!(VecOptionStruct::shape(&ShapeOptions::Serialize), expected);
+  eq!(VecOptionStruct::shape(&ShapeOptions::for_serialize()), expected);
 }
 
 #[test]
@@ -1236,5 +1236,5 @@ fn option_in_vec_deserialization() {
     )]),
   });
 
-  eq!(VecOptionStruct::shape(&ShapeOptions::Deserialize), expected);
+  eq!(VecOptionStruct::shape(&ShapeOptions::for_deserialize()), expected);
 }

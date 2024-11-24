@@ -9,6 +9,6 @@ fn tuple() {
     rest: None,
   });
 
-  eq!(<(i32, String)>::shape(&ShapeOptions::Serialize), expected);
-  eq!(<(i32, String)>::shape(&ShapeOptions::Deserialize), expected);
+  eq!(<(i32, String)>::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(<(i32, String)>::shape(&ShapeOptions::for_deserialize()), expected);
 }

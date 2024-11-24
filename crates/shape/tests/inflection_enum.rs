@@ -42,8 +42,8 @@ fn snake_upper() {
     })
   ]);
 
-  eq!(Snake::shape(&ShapeOptions::Serialize), expected);
-  eq!(Snake::shape(&ShapeOptions::Deserialize), expected); 
+  eq!(Snake::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Snake::shape(&ShapeOptions::for_deserialize()), expected); 
 }
 
 // SCREAMING_SNAKE_CASE
@@ -84,8 +84,8 @@ fn screaming_snake_case() {
     })
   ]);
 
-  eq!(ScreamingSnake::shape(&ShapeOptions::Serialize), expected);
-  eq!(ScreamingSnake::shape(&ShapeOptions::Deserialize), expected); 
+  eq!(ScreamingSnake::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(ScreamingSnake::shape(&ShapeOptions::for_deserialize()), expected); 
 }
 
 // lowercase
@@ -126,8 +126,8 @@ fn lowercase() {
     })
   ]);
 
-  eq!(Lowercase::shape(&ShapeOptions::Serialize), expected);
-  eq!(Lowercase::shape(&ShapeOptions::Deserialize), expected); 
+  eq!(Lowercase::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Lowercase::shape(&ShapeOptions::for_deserialize()), expected); 
 }
 
 // camelCase
@@ -168,8 +168,8 @@ fn camel_case() {
     })
   ]);
 
-  eq!(Camel::shape(&ShapeOptions::Serialize), expected);
-  eq!(Camel::shape(&ShapeOptions::Deserialize), expected); 
+  eq!(Camel::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Camel::shape(&ShapeOptions::for_deserialize()), expected); 
 }
 
 // PascalCase
@@ -210,8 +210,8 @@ fn pascal_case() {
     })
   ]);
 
-  eq!(Pascal::shape(&ShapeOptions::Serialize), expected);
-  eq!(Pascal::shape(&ShapeOptions::Deserialize), expected); 
+  eq!(Pascal::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Pascal::shape(&ShapeOptions::for_deserialize()), expected); 
 }
 
 // SCREAMING-KEBAB-CASE
@@ -252,8 +252,8 @@ fn screaming_kebab_case() {
     })
   ]);
 
-  eq!(ScreamingKebab::shape(&ShapeOptions::Serialize), expected);
-  eq!(ScreamingKebab::shape(&ShapeOptions::Deserialize), expected); 
+  eq!(ScreamingKebab::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(ScreamingKebab::shape(&ShapeOptions::for_deserialize()), expected); 
 }
 
 // kebab-case
@@ -294,8 +294,8 @@ fn kebab_case() {
     })
   ]);
 
-  eq!(Kebab::shape(&ShapeOptions::Serialize), expected);
-  eq!(Kebab::shape(&ShapeOptions::Deserialize), expected); 
+  eq!(Kebab::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Kebab::shape(&ShapeOptions::for_deserialize()), expected); 
 }
 
 // UPPERCASE
@@ -336,8 +336,8 @@ fn uppercase() {
     })
   ]);
 
-  eq!(Uppercase::shape(&ShapeOptions::Serialize), expected);
-  eq!(Uppercase::shape(&ShapeOptions::Deserialize), expected); 
+  eq!(Uppercase::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Uppercase::shape(&ShapeOptions::for_deserialize()), expected); 
 }
 
 // rename_all_fields
@@ -380,8 +380,8 @@ fn rename_all_fields_snake_case() {
     })
   ]);
 
-  eq!(Snake::shape(&ShapeOptions::Serialize), expected);
-  eq!(Snake::shape(&ShapeOptions::Deserialize), expected); 
+  eq!(Snake::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Snake::shape(&ShapeOptions::for_deserialize()), expected); 
 }
 
 // SCREAMING_SNAKE_CASE
@@ -423,8 +423,8 @@ fn rename_all_fields_screaming_snake_case() {
     })   
   ]);
 
-  eq!(ScreamingSnake::shape(&ShapeOptions::Serialize), expected);
-  eq!(ScreamingSnake::shape(&ShapeOptions::Deserialize), expected); 
+  eq!(ScreamingSnake::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(ScreamingSnake::shape(&ShapeOptions::for_deserialize()), expected); 
 }
 
 // lowercase
@@ -467,8 +467,8 @@ fn rename_all_fields_lowercase() {
     })
   ]);
 
-  eq!(Lowercase::shape(&ShapeOptions::Serialize), expected);
-  eq!(Lowercase::shape(&ShapeOptions::Deserialize), expected); 
+  eq!(Lowercase::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Lowercase::shape(&ShapeOptions::for_deserialize()), expected); 
 }
 
 // UPPERCASE
@@ -510,8 +510,8 @@ fn rename_all_fields_uppercase() {
     })
   ]);
 
-  eq!(Uppercase::shape(&ShapeOptions::Serialize), expected);
-  eq!(Uppercase::shape(&ShapeOptions::Deserialize), expected); 
+  eq!(Uppercase::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Uppercase::shape(&ShapeOptions::for_deserialize()), expected); 
 }
 
 // camelCase
@@ -553,8 +553,8 @@ fn rename_all_fields_camel_case() {
     })
   ]);
 
-  eq!(Camel::shape(&ShapeOptions::Serialize), expected);
-  eq!(Camel::shape(&ShapeOptions::Deserialize), expected); 
+  eq!(Camel::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Camel::shape(&ShapeOptions::for_deserialize()), expected); 
 }
 
 // SCREAMING-KEBAB-CASE
@@ -622,8 +622,8 @@ fn rename_all_fields_screaming_kebab_case() {
     })
   ]);
 
-  eq!(ScreamingKebab::shape(&ShapeOptions::Serialize), ser);
-  eq!(ScreamingKebab::shape(&ShapeOptions::Deserialize), de); 
+  eq!(ScreamingKebab::shape(&ShapeOptions::for_serialize()), ser);
+  eq!(ScreamingKebab::shape(&ShapeOptions::for_deserialize()), de); 
 }
 
 // kebab-case
@@ -665,8 +665,8 @@ fn rename_all_fields_kebab_case() {
     })
   ]);
 
-  eq!(Kebab::shape(&ShapeOptions::Serialize), expected);
-  eq!(Kebab::shape(&ShapeOptions::Deserialize), expected); 
+  eq!(Kebab::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Kebab::shape(&ShapeOptions::for_deserialize()), expected); 
 }
 
 // PascalCase
@@ -708,8 +708,8 @@ fn rename_all_fields_pascal_case() {
     })
   ]);
 
-  eq!(Pascal::shape(&ShapeOptions::Serialize), expected);
-  eq!(Pascal::shape(&ShapeOptions::Deserialize), expected); 
+  eq!(Pascal::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Pascal::shape(&ShapeOptions::for_deserialize()), expected); 
 }
 
 #[test]
@@ -777,8 +777,8 @@ fn variant_rename_all() {
     })
   ]);
 
-  eq!(RenamedEnum::shape(&ShapeOptions::Serialize), ser); 
-  eq!(RenamedEnum::shape(&ShapeOptions::Deserialize), de);
+  eq!(RenamedEnum::shape(&ShapeOptions::for_serialize()), ser); 
+  eq!(RenamedEnum::shape(&ShapeOptions::for_deserialize()), de);
 }
 
 #[test]
@@ -802,6 +802,6 @@ fn variant_rename() {
     Type::Literal(Literal::String("VARI_TWO".into())),
   ]);
 
-  eq!(RenamedEnum::shape(&ShapeOptions::Serialize), ser);
-  eq!(RenamedEnum::shape(&ShapeOptions::Deserialize), de);
+  eq!(RenamedEnum::shape(&ShapeOptions::for_serialize()), ser);
+  eq!(RenamedEnum::shape(&ShapeOptions::for_deserialize()), de);
 }

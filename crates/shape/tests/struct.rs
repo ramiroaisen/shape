@@ -13,6 +13,6 @@ fn empty_struct() {
     properties: IndexMap::new(),
   });
 
-  eq!(EmptyStruct::shape(&ShapeOptions::Serialize), expected);
-  eq!(EmptyStruct::shape(&ShapeOptions::Deserialize), expected);
+  eq!(EmptyStruct::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(EmptyStruct::shape(&ShapeOptions::for_deserialize()), expected);
 }

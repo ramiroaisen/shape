@@ -24,62 +24,62 @@ macro_rules! eq {
 
 #[test]
 fn primitives() {
-  eq!(String::shape(&ShapeOptions::Serialize), "string");
-  eq!(String::shape(&ShapeOptions::Deserialize), "string");
+  eq!(String::shape(&ShapeOptions::for_serialize()), "string");
+  eq!(String::shape(&ShapeOptions::for_deserialize()), "string");
 
-  eq!(u8::shape(&ShapeOptions::Serialize), "number");
-  eq!(u8::shape(&ShapeOptions::Deserialize), "number");
+  eq!(u8::shape(&ShapeOptions::for_serialize()), "number");
+  eq!(u8::shape(&ShapeOptions::for_deserialize()), "number");
 
-  eq!(u16::shape(&ShapeOptions::Serialize), "number");
-  eq!(u16::shape(&ShapeOptions::Deserialize), "number");
+  eq!(u16::shape(&ShapeOptions::for_serialize()), "number");
+  eq!(u16::shape(&ShapeOptions::for_deserialize()), "number");
 
-  eq!(u32::shape(&ShapeOptions::Serialize), "number");
-  eq!(u32::shape(&ShapeOptions::Deserialize), "number");
+  eq!(u32::shape(&ShapeOptions::for_serialize()), "number");
+  eq!(u32::shape(&ShapeOptions::for_deserialize()), "number");
 
-  eq!(u64::shape(&ShapeOptions::Serialize), "number");
-  eq!(u64::shape(&ShapeOptions::Deserialize), "number");
+  eq!(u64::shape(&ShapeOptions::for_serialize()), "number");
+  eq!(u64::shape(&ShapeOptions::for_deserialize()), "number");
 
-  eq!(u128::shape(&ShapeOptions::Serialize), "number");
-  eq!(u128::shape(&ShapeOptions::Deserialize), "number");
+  eq!(u128::shape(&ShapeOptions::for_serialize()), "number");
+  eq!(u128::shape(&ShapeOptions::for_deserialize()), "number");
 
-  eq!(usize::shape(&ShapeOptions::Serialize), "number");
-  eq!(usize::shape(&ShapeOptions::Deserialize), "number");
+  eq!(usize::shape(&ShapeOptions::for_serialize()), "number");
+  eq!(usize::shape(&ShapeOptions::for_deserialize()), "number");
 
-  eq!(i8::shape(&ShapeOptions::Serialize), "number");
-  eq!(i8::shape(&ShapeOptions::Deserialize), "number");
+  eq!(i8::shape(&ShapeOptions::for_serialize()), "number");
+  eq!(i8::shape(&ShapeOptions::for_deserialize()), "number");
 
-  eq!(i16::shape(&ShapeOptions::Serialize), "number");
-  eq!(i16::shape(&ShapeOptions::Deserialize), "number");
+  eq!(i16::shape(&ShapeOptions::for_serialize()), "number");
+  eq!(i16::shape(&ShapeOptions::for_deserialize()), "number");
 
-  eq!(i32::shape(&ShapeOptions::Serialize), "number");
-  eq!(i32::shape(&ShapeOptions::Deserialize), "number");
+  eq!(i32::shape(&ShapeOptions::for_serialize()), "number");
+  eq!(i32::shape(&ShapeOptions::for_deserialize()), "number");
 
-  eq!(i64::shape(&ShapeOptions::Serialize), "number");
-  eq!(i64::shape(&ShapeOptions::Deserialize), "number");
+  eq!(i64::shape(&ShapeOptions::for_serialize()), "number");
+  eq!(i64::shape(&ShapeOptions::for_deserialize()), "number");
 
-  eq!(i128::shape(&ShapeOptions::Serialize), "number");
-  eq!(i128::shape(&ShapeOptions::Deserialize), "number");
+  eq!(i128::shape(&ShapeOptions::for_serialize()), "number");
+  eq!(i128::shape(&ShapeOptions::for_deserialize()), "number");
 
-  eq!(isize::shape(&ShapeOptions::Serialize), "number");
-  eq!(isize::shape(&ShapeOptions::Deserialize), "number");
+  eq!(isize::shape(&ShapeOptions::for_serialize()), "number");
+  eq!(isize::shape(&ShapeOptions::for_deserialize()), "number");
 
-  eq!(f32::shape(&ShapeOptions::Serialize), "number");
-  eq!(f32::shape(&ShapeOptions::Deserialize), "number");
+  eq!(f32::shape(&ShapeOptions::for_serialize()), "number");
+  eq!(f32::shape(&ShapeOptions::for_deserialize()), "number");
 
-  eq!(f64::shape(&ShapeOptions::Serialize), "number");
-  eq!(f64::shape(&ShapeOptions::Deserialize), "number");
+  eq!(f64::shape(&ShapeOptions::for_serialize()), "number");
+  eq!(f64::shape(&ShapeOptions::for_deserialize()), "number");
 
-  eq!(bool::shape(&ShapeOptions::Serialize), "boolean");
-  eq!(bool::shape(&ShapeOptions::Deserialize), "boolean");
+  eq!(bool::shape(&ShapeOptions::for_serialize()), "boolean");
+  eq!(bool::shape(&ShapeOptions::for_deserialize()), "boolean");
 
-  eq!(<()>::shape(&ShapeOptions::Serialize), "null");
-  eq!(<()>::shape(&ShapeOptions::Deserialize), "null");
+  eq!(<()>::shape(&ShapeOptions::for_serialize()), "null");
+  eq!(<()>::shape(&ShapeOptions::for_deserialize()), "null");
 }
 
 #[test]
 fn option() {
-  eq!(Option::<String>::shape(&ShapeOptions::Serialize), "(string|null)");
-  eq!(Option::<String>::shape(&ShapeOptions::Deserialize), "(string|null|undefined)");
+  eq!(Option::<String>::shape(&ShapeOptions::for_serialize()), "(string|null)");
+  eq!(Option::<String>::shape(&ShapeOptions::for_deserialize()), "(string|null|undefined)");
 }
 
 #[test]
@@ -89,8 +89,8 @@ fn array() {
 
 #[test]
 fn tuple() {
-  eq!(<(String, i32)>::shape(&ShapeOptions::Serialize), "[string,number]");
-  eq!(<(String, i32)>::shape(&ShapeOptions::Deserialize), "[string,number]");
+  eq!(<(String, i32)>::shape(&ShapeOptions::for_serialize()), "[string,number]");
+  eq!(<(String, i32)>::shape(&ShapeOptions::for_deserialize()), "[string,number]");
 }
 
 #[test]

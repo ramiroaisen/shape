@@ -14,19 +14,46 @@ pub trait Shape {
   fn shape(options: &ShapeOptions) -> Type;
 }
 
-#[derive(Debug, Clone)]
-pub enum ShapeOptions {
+#[derive(Debug, Clone, Copy)]
+pub enum ShapeOptionsKind {
   Serialize,
   Deserialize,
 }
 
+#[derive(Debug, Clone)]
+pub struct ShapeOptions {
+  pub kind: ShapeOptionsKind,
+  pub option_is_optional: bool,
+  pub option_add_undefined: bool,
+  pub option_add_null: bool,
+}
+
 impl ShapeOptions {
+ 
+  pub fn for_serialize() -> Self {
+    Self {
+      kind: ShapeOptionsKind::Serialize,
+      option_is_optional: false,
+      option_add_undefined: false,
+      option_add_null: true,
+    }
+  }
+
+  pub fn for_deserialize() -> Self {
+    Self {
+      kind: ShapeOptionsKind::Deserialize,
+      option_is_optional: true, 
+      option_add_undefined: true,
+      option_add_null: true,
+    }
+  }
+
   pub fn is_serialize(&self) -> bool {
-    matches!(self, ShapeOptions::Serialize { .. })
+    matches!(self.kind, ShapeOptionsKind::Serialize)
   }
 
   pub fn is_deserialize(&self) -> bool {
-    matches!(self, ShapeOptions::Deserialize { .. })
+    matches!(self.kind, ShapeOptionsKind::Deserialize)
   }
 }
 
@@ -137,10 +164,14 @@ macro_rules! impl_inner {
 impl<T: Shape> Shape for Option<T> {
   fn shape(options: &ShapeOptions) -> Type {
     let inner = T::shape(options);
-    if options.is_serialize() {
-      Type::Or(vec![ inner, Type::Null ])
-    } else {
+    if options.option_add_null && options.option_add_undefined {
       Type::Or(vec![ inner, Type::Null, Type::Undefined ])
+    } else if options.option_add_null {
+      Type::Or(vec![ inner, Type::Null ])
+    } else if options.option_add_undefined {
+      Type::Or(vec![inner, Type::Undefined ])
+    } else {
+      inner
     }
   }
 }

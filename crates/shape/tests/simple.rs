@@ -3,7 +3,7 @@ use shape::{Shape, ShapeOptions, Type};
 
 #[test]
 fn primitives() {
-  for options in [ShapeOptions::Serialize, ShapeOptions::Deserialize] {
+  for options in [ShapeOptions::for_serialize(), ShapeOptions::for_deserialize()] {
     eq!(Type::String, String::shape(&options));
     eq!(Type::String, str::shape(&options));
     eq!(Type::Number, u8::shape(&options));
@@ -27,7 +27,7 @@ fn primitives() {
 
 #[test]
 fn refs() {
-  for options in [ShapeOptions::Serialize, ShapeOptions::Deserialize] {
+  for options in [ShapeOptions::for_serialize(), ShapeOptions::for_deserialize()] {
     eq!(Type::String, <&String>::shape(&options));
     eq!(Type::String, <&str>::shape(&options));
     eq!(Type::Number, <&u8>::shape(&options));
@@ -54,12 +54,12 @@ fn unit_struct() {
   #[derive(Shape)]
   struct UnitStruct;
 
-  eq!(UnitStruct::shape(&ShapeOptions::Serialize), Type::Null);
-  eq!(UnitStruct::shape(&ShapeOptions::Deserialize), Type::Null);
+  eq!(UnitStruct::shape(&ShapeOptions::for_serialize()), Type::Null);
+  eq!(UnitStruct::shape(&ShapeOptions::for_deserialize()), Type::Null);
 }
 
 #[test]
 fn unit() {
-  eq!(<()>::shape(&ShapeOptions::Serialize), Type::Null);
-  eq!(<()>::shape(&ShapeOptions::Deserialize), Type::Null);
+  eq!(<()>::shape(&ShapeOptions::for_serialize()), Type::Null);
+  eq!(<()>::shape(&ShapeOptions::for_deserialize()), Type::Null);
 }

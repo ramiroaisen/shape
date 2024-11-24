@@ -12,20 +12,20 @@ fn array_containers() {
     item: Box::new(Type::String),
   });
   
-  eq!(Vec::<String>::shape(&ShapeOptions::Serialize), expected);
-  eq!(Vec::<String>::shape(&ShapeOptions::Deserialize), expected);
+  eq!(Vec::<String>::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Vec::<String>::shape(&ShapeOptions::for_deserialize()), expected);
 
-  eq!(<[String]>::shape(&ShapeOptions::Serialize), expected);
-  eq!(<[String]>::shape(&ShapeOptions::Deserialize), expected);
+  eq!(<[String]>::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(<[String]>::shape(&ShapeOptions::for_deserialize()), expected);
 
-  eq!(HashSet::<String>::shape(&ShapeOptions::Serialize), expected);
-  eq!(HashSet::<String>::shape(&ShapeOptions::Deserialize), expected);
+  eq!(HashSet::<String>::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(HashSet::<String>::shape(&ShapeOptions::for_deserialize()), expected);
 
-  eq!(<BTreeSet<String>>::shape(&ShapeOptions::Serialize), expected);
-  eq!(<BTreeSet<String>>::shape(&ShapeOptions::Deserialize), expected);
+  eq!(<BTreeSet<String>>::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(<BTreeSet<String>>::shape(&ShapeOptions::for_deserialize()), expected);
 
-  eq!(<IndexSet<String>>::shape(&ShapeOptions::Serialize), expected);
-  eq!(<IndexSet<String>>::shape(&ShapeOptions::Deserialize), expected);
+  eq!(<IndexSet<String>>::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(<IndexSet<String>>::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -37,6 +37,6 @@ fn static_array() {
     }
   );
 
-  eq!(<[i32; 3]>::shape(&ShapeOptions::Serialize), expected);
-  eq!(<[i32; 3]>::shape(&ShapeOptions::Deserialize), expected);
+  eq!(<[i32; 3]>::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(<[i32; 3]>::shape(&ShapeOptions::for_deserialize()), expected);
 }

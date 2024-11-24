@@ -29,8 +29,8 @@ fn snake_case() {
     ]),
   });
 
-  eq!(Snake::shape(&shape::ShapeOptions::Serialize), expected);
-  eq!(Snake::shape(&shape::ShapeOptions::Deserialize), expected);
+  eq!(Snake::shape(&shape::ShapeOptions::for_serialize()), expected);
+  eq!(Snake::shape(&shape::ShapeOptions::for_deserialize()), expected);
 }
 
 // kebab-case
@@ -56,8 +56,8 @@ fn kebab_case() {
     ])
   });
 
-  eq!(Kebab::shape(&shape::ShapeOptions::Serialize), expected);
-  eq!(Kebab::shape(&shape::ShapeOptions::Deserialize), expected);
+  eq!(Kebab::shape(&shape::ShapeOptions::for_serialize()), expected);
+  eq!(Kebab::shape(&shape::ShapeOptions::for_deserialize()), expected);
 }
 
 // SCREAMING_SNAKE_CASE
@@ -84,8 +84,8 @@ fn screaming_snake_case() {
     ])
   });
 
-  eq!(ScreamingSnake::shape(&shape::ShapeOptions::Serialize), expected);
-  eq!(ScreamingSnake::shape(&shape::ShapeOptions::Deserialize), expected);
+  eq!(ScreamingSnake::shape(&shape::ShapeOptions::for_serialize()), expected);
+  eq!(ScreamingSnake::shape(&shape::ShapeOptions::for_deserialize()), expected);
 }
 
 // PascalCase
@@ -112,8 +112,8 @@ fn pascal_case() {
     ])
   });
 
-  eq!(Pascal::shape(&shape::ShapeOptions::Serialize), expected);
-  eq!(Pascal::shape(&shape::ShapeOptions::Deserialize), expected);
+  eq!(Pascal::shape(&shape::ShapeOptions::for_serialize()), expected);
+  eq!(Pascal::shape(&shape::ShapeOptions::for_deserialize()), expected);
 }
 
 // camelCase
@@ -140,8 +140,8 @@ fn camel_case() {
     ])
   });
 
-  eq!(Camel::shape(&shape::ShapeOptions::Serialize), expected);
-  eq!(Camel::shape(&shape::ShapeOptions::Deserialize), expected);
+  eq!(Camel::shape(&shape::ShapeOptions::for_serialize()), expected);
+  eq!(Camel::shape(&shape::ShapeOptions::for_deserialize()), expected);
 }
 
 // SCHREAMING-KEBAB-CASE
@@ -168,8 +168,8 @@ fn screaming_kebab_case() {
     ])
   });
 
-  eq!(ScreamingKebab::shape(&shape::ShapeOptions::Serialize), expected);
-  eq!(ScreamingKebab::shape(&shape::ShapeOptions::Deserialize), expected);
+  eq!(ScreamingKebab::shape(&shape::ShapeOptions::for_serialize()), expected);
+  eq!(ScreamingKebab::shape(&shape::ShapeOptions::for_deserialize()), expected);
 }
 
 // UPPERCASE
@@ -196,8 +196,8 @@ fn uppercase() {
     ])
   });
 
-  eq!(Uppercase::shape(&shape::ShapeOptions::Serialize), expected);
-  eq!(Uppercase::shape(&shape::ShapeOptions::Deserialize), expected);
+  eq!(Uppercase::shape(&shape::ShapeOptions::for_serialize()), expected);
+  eq!(Uppercase::shape(&shape::ShapeOptions::for_deserialize()), expected);
 }
 
 // lowercase
@@ -224,6 +224,6 @@ fn lowercase() {
     ]),
   });
 
-  eq!(Lowercase::shape(&ShapeOptions::Serialize), expected);
-  eq!(Lowercase::shape(&ShapeOptions::Deserialize), expected);
+  eq!(Lowercase::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(Lowercase::shape(&ShapeOptions::for_deserialize()), expected);
 }

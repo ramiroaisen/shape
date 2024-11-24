@@ -423,8 +423,6 @@ fn fields_named(container_attrs: &ContainerAttrs, variant_attrs: Option<&Variant
     for field in &fields.named {
       let field_attrs = FieldAttrs::from_attributes(&field.attrs)?;
 
-      let is_option = is_option(&field.ty);
-
       if field_attrs.skip.is_some() {
         continue;
       }
@@ -434,6 +432,8 @@ fn fields_named(container_attrs: &ContainerAttrs, variant_attrs: Option<&Variant
         continue;
       }
 
+      let is_option = is_option(&field.ty);
+
       let field_skip_serializing = field_attrs.skip_serializing.is_some();
       let field_skip_serializing_if = field_attrs.skip_serializing_if.is_some();
       
@@ -442,15 +442,16 @@ fn fields_named(container_attrs: &ContainerAttrs, variant_attrs: Option<&Variant
       let field_skip_deserializing = field_attrs.skip_deserializing.is_some();
       
       let optional = quote!{
-        if options.is_serialize() {
+        if #is_option && options.option_is_optional {
+          true
+        } else if options.is_serialize() {
           if #field_skip_serializing_if {
             true
           } else {
             false
           }
         } else {
-          // options are always optional in deserialize mode
-          if #field_has_default || #container_has_default || #is_option {
+          if #field_has_default || #container_has_default {
             true
           } else {
             false

@@ -13,8 +13,8 @@ fn serde_from_into() {
     some_field: u8,
   }
 
-  eq!(SerdeFromInto::shape(&ShapeOptions::Serialize), Type::String);
-  eq!(SerdeFromInto::shape(&ShapeOptions::Deserialize), Type::Number);
+  eq!(SerdeFromInto::shape(&ShapeOptions::for_serialize()), Type::String);
+  eq!(SerdeFromInto::shape(&ShapeOptions::for_deserialize()), Type::Number);
 }
 
 #[test]
@@ -28,6 +28,6 @@ fn serde_try_from_try_into() {
     some_field: u8,
   }
 
-  eq!(SerdeTryFromTryInto::shape(&ShapeOptions::Serialize), Type::Number);
-  eq!(SerdeTryFromTryInto::shape(&ShapeOptions::Deserialize), Type::String);
+  eq!(SerdeTryFromTryInto::shape(&ShapeOptions::for_serialize()), Type::Number);
+  eq!(SerdeTryFromTryInto::shape(&ShapeOptions::for_deserialize()), Type::String);
 }

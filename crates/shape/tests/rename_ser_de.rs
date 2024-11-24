@@ -55,8 +55,8 @@ fn rename_all_ser_de() {
     ]),
   });
 
-  eq!(RenamedFields::shape(&ShapeOptions::Serialize), ser);
-  eq!(RenamedFields::shape(&ShapeOptions::Deserialize), de);
+  eq!(RenamedFields::shape(&ShapeOptions::for_serialize()), ser);
+  eq!(RenamedFields::shape(&ShapeOptions::for_deserialize()), de);
 }
 
 #[test]
@@ -90,8 +90,8 @@ fn rename_ser_de() {
     )]),
   });
 
-  eq!(RenamedFields::shape(&ShapeOptions::Serialize), ser);
-  eq!(RenamedFields::shape(&ShapeOptions::Deserialize), de);
+  eq!(RenamedFields::shape(&ShapeOptions::for_serialize()), ser);
+  eq!(RenamedFields::shape(&ShapeOptions::for_deserialize()), de);
 }
 
 #[test]
@@ -157,8 +157,8 @@ fn enum_rename_all_fields() {
     })
   ]);
 
-  eq!(RenamedEnum::shape(&ShapeOptions::Serialize), ser);
-  eq!(RenamedEnum::shape(&ShapeOptions::Deserialize), de);
+  eq!(RenamedEnum::shape(&ShapeOptions::for_serialize()), ser);
+  eq!(RenamedEnum::shape(&ShapeOptions::for_deserialize()), de);
 }
 
 #[test]
@@ -178,8 +178,8 @@ fn enum_variant_rename() {
     Type::Literal(Literal::String("VARIANT-ONE".into())),
   ]);
 
-  eq!(RenamedEnum::shape(&ShapeOptions::Serialize), ser);
-  eq!(RenamedEnum::shape(&ShapeOptions::Deserialize), de);
+  eq!(RenamedEnum::shape(&ShapeOptions::for_serialize()), ser);
+  eq!(RenamedEnum::shape(&ShapeOptions::for_deserialize()), de);
 }
 
 #[test]
@@ -245,6 +245,6 @@ fn enum_variant_rename_all() {
     })   
   ]);
 
-  eq!(RenamedEnum::shape(&ShapeOptions::Serialize), ser);
-  eq!(RenamedEnum::shape(&ShapeOptions::Deserialize), de);
+  eq!(RenamedEnum::shape(&ShapeOptions::for_serialize()), ser);
+  eq!(RenamedEnum::shape(&ShapeOptions::for_deserialize()), de);
 }

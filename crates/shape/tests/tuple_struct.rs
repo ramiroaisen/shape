@@ -13,8 +13,8 @@ fn tuple_primitive() {
     rest: None,
   });
 
-  eq!(TupleStruct::shape(&ShapeOptions::Serialize), expected);
-  eq!(TupleStruct::shape(&ShapeOptions::Deserialize), expected);
+  eq!(TupleStruct::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(TupleStruct::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -28,8 +28,8 @@ fn tuple_skip() {
     rest: None,
   });
 
-  eq!(TupleStruct::shape(&ShapeOptions::Serialize), expected);
-  eq!(TupleStruct::shape(&ShapeOptions::Deserialize), expected);
+  eq!(TupleStruct::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(TupleStruct::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
 #[test]
@@ -48,8 +48,8 @@ fn tuple_skip_serializing() {
     rest: None,
   });
 
-  eq!(TupleStruct::shape(&ShapeOptions::Serialize), ser);
-  eq!(TupleStruct::shape(&ShapeOptions::Deserialize), de);
+  eq!(TupleStruct::shape(&ShapeOptions::for_serialize()), ser);
+  eq!(TupleStruct::shape(&ShapeOptions::for_deserialize()), de);
 }
 
 #[test]
@@ -68,8 +68,8 @@ fn tuple_skip_deserializing() {
     rest: None,
   });
 
-  eq!(TupleStruct::shape(&ShapeOptions::Serialize), ser);
-  eq!(TupleStruct::shape(&ShapeOptions::Deserialize), de);
+  eq!(TupleStruct::shape(&ShapeOptions::for_serialize()), ser);
+  eq!(TupleStruct::shape(&ShapeOptions::for_deserialize()), de);
 }
 
 #[test]
@@ -83,6 +83,6 @@ fn tuple_empty_skip_one() {
     rest: None,
   });
 
-  eq!(TupleStruct::shape(&ShapeOptions::Serialize), expected);
-  eq!(TupleStruct::shape(&ShapeOptions::Deserialize), expected);
+  eq!(TupleStruct::shape(&ShapeOptions::for_serialize()), expected);
+  eq!(TupleStruct::shape(&ShapeOptions::for_deserialize()), expected);
 }

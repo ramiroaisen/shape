@@ -23,7 +23,7 @@ fn generics() {
     )]),
   });
 
-  eq!(Generic::<String>::shape(&ShapeOptions::Serialize), expected);
+  eq!(Generic::<String>::shape(&ShapeOptions::for_serialize()), expected);
 }
 
 #[test]
@@ -45,5 +45,5 @@ fn generics_with_where_clause() {
     )]),
   });
 
-  eq!(Generic::<String>::shape(&ShapeOptions::Serialize), expected);
+  eq!(Generic::<String>::shape(&ShapeOptions::for_serialize()), expected);
 }
