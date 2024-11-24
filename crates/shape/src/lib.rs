@@ -1,12 +1,16 @@
 pub use shape_macros::Shape;
 
+mod to_typescript;
+pub use to_typescript::ToTypescript;
+mod is_assignable;
+pub use is_assignable::IsAsignable;
+pub use indexmap;
+
 use std::{
   collections::{BTreeMap, BTreeSet, HashMap, HashSet},
   rc::Rc,
   sync::Arc,
 };
-
-pub use indexmap;
 use indexmap::{IndexMap, IndexSet};
 
 /// The shape trait is derived in a type to generate a schema for the (de)serialization of that type
@@ -95,6 +99,8 @@ pub struct Object {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Record {
+  pub optional: bool,
+  pub readonly: bool,
   pub key: Box<Type>,
   pub value: Box<Type>,
 }
@@ -207,6 +213,8 @@ macro_rules! impl_map {
     {
       fn shape(options: &ShapeOptions) -> Type {
         Type::Record(Record {
+          optional: false,
+          readonly: false,
           key: Box::new(<$k>::shape(options)),
           value: Box::new(<$v>::shape(options)),
         })
@@ -259,111 +267,6 @@ where
       items.push(inner.clone());
     }
     Type::Tuple(Tuple { items, rest: None })
-  }
-}
-
-pub trait ToTypescript {
-  fn to_typescript(&self) -> String;
-}
-
-impl ToTypescript for Array {
-  fn to_typescript(&self) -> String {
-    format!("Array<{}>", self.item.to_typescript())
-  }
-}
-
-impl ToTypescript for Object {
-  fn to_typescript(&self) -> String {
-    let mut properties = vec![];
-    for (key, prop) in self.properties.iter() {
-      
-      macro_rules! quote {
-        ($key:expr) => {
-          serde_json::to_string($key).unwrap()
-        };
-      }
-
-      let quoted_key = {
-        let first = key.chars().nth(0);
-        match first {
-          None => String::from("\"\""),
-          Some(first) => {
-            if
-              !matches!(first, 'a'..='z' | 'A'..='Z' | '_') ||
-              key.contains(|c| !matches!(c, 'a'..='z' | 'A'..='Z' | '0'..='9' | '_')) 
-            {
-               quote!(key)
-            } else {
-              String::from(key)
-            }
-          }
-        }
-      };
-
-      properties.push(
-        format!(
-          "{readonly}{key}{optional}: {value};",
-          readonly = if prop.readonly { "readonly " } else { "" },
-          key = quoted_key,
-          optional = if prop.optional { "?" } else { "" },
-          value = prop.ty.to_typescript(),
-        )
-      );
-    }
-    format!("{{ {} }}", properties.join(" "))
-  }
-}
-
-impl ToTypescript for Record {
-  fn to_typescript(&self) -> String {
-    format!(
-      "{{ [key: {key}]: {value} }}",
-      key = self.key.to_typescript(),
-      value = self.value.to_typescript()
-    )
-  }
-}
-
-impl ToTypescript for Literal {
-  fn to_typescript(&self) -> String {
-      match self {
-        Literal::String(value) => serde_json::to_string(value).unwrap(),
-        Literal::Number(value) => value.to_string(),
-        Literal::Boolean(value) => value.to_string(),
-      }
-  }
-}
-
-impl ToTypescript for Tuple {
-  fn to_typescript(&self) -> String {
-    let inner = self.items.iter().map(|t| t.to_typescript()).collect::<Vec<String>>().join(", ");
-    format!("[{}]", inner)
-  }
-}
-
-impl ToTypescript for Type {
-  fn to_typescript(&self) -> String {
-    match self {
-      Type::String => String::from("string"),
-      Type::Number => String::from("number"),
-      Type::Boolean => String::from("boolean"),
-      Type::Null => String::from("null"),
-      Type::Undefined => String::from("undefined"),
-      Type::Never => String::from("never"),
-      Type::Literal(literal) => literal.to_typescript(),
-      Type::Tuple(tuple) => tuple.to_typescript(),
-      Type::Array(array) => array.to_typescript(),
-      Type::Object(object) => object.to_typescript(),
-      Type::Record(record) => record.to_typescript(),
-      Type::And(types) => {
-        let inner = types.iter().map(|t| t.to_typescript()).collect::<Vec<String>>().join(" & ");
-        format!("({})", inner)
-      }
-      Type::Or(types) => {
-        let inner = types.iter().map(|t| t.to_typescript()).collect::<Vec<String>>().join(" | ");
-        format!("({})", inner)
-      }
-      Type::Custom(custom) => custom.clone(),    }
   }
 }
 

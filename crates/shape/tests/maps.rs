@@ -8,17 +8,24 @@ use shape::{Record, Shape, ShapeOptions, Type};
 #[test]
 fn maps() {
   eq!(HashMap::<String, i32>::shape(&ShapeOptions::for_serialize()), Type::Record(Record {
+    optional: false,
+    readonly: false,
     key: Box::new(Type::String),
     value: Box::new(Type::Number),
   }));
 
   eq!(IndexMap::<String, i32>::shape(&ShapeOptions::for_serialize()), Type::Record(Record {
+    optional: false,
+    readonly: false,
     key: Box::new(Type::String),
     value: Box::new(Type::Number),
   }));
 
-  eq!(BTreeMap::<String, i32>::shape(&ShapeOptions::for_serialize()), Type::Record(Record {
-    key: Box::new(Type::String),
-    value: Box::new(Type::Number),
+  eq!(BTreeMap::<String, i32>::shape(&ShapeOptions::for_serialize()), Type::Record(
+    Record {
+      optional: false,
+      readonly: false,
+      key: Box::new(Type::String),
+      value: Box::new(Type::Number),
   }));
 }

@@ -95,7 +95,7 @@ fn tuple() {
 
 #[test]
 fn record() {
-  eq!(Type::Record(Record { key: Box::new(Type::String), value: Box::new(Type::Number) }), "{[key:string]:number}");
+  eq!(Type::Record(Record { optional: false, readonly: false, key: Box::new(Type::String), value: Box::new(Type::Number) }), "{[key:string]:number}");
 }
 
 #[test]
