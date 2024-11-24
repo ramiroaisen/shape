@@ -4,24 +4,26 @@ use syn::Type;
 #[derive(Debug, FromAttributes)]
 #[darling(attributes(serde, shape))]
 pub struct ContainerAttrs {
-  pub rename: Option<Complex<String>>,
   pub rename_all: Option<Complex<Inflection>>,
   pub rename_all_fields: Option<Complex<Inflection>>,
   pub tag: Option<String>,
   pub content: Option<String>,
-  pub deny_unknown_fields: Option<()>,
   pub untagged: Option<()>,
   pub transparent: Option<()>,
-  pub remote: Option<Type>,
   pub from: Option<Type>,
   pub try_from: Option<Type>,
   pub into: Option<Type>,
   pub try_into: Option<Type>,
-  #[darling(rename = "crate")]
-  pub serde_crate: Option<String>, 
-  pub expecting: Option<String>,
-  pub bound: Option<Complex<String>>,
   pub default: Option<UnitOr<String>>,
+  
+  // unused
+  // pub rename: Option<Complex<String>>,
+  // pub deny_unknown_fields: Option<()>,
+  // pub remote: Option<Type>,
+  // #[darling(rename = "crate")]
+  // pub serde_crate: Option<String>, 
+  // pub expecting: Option<String>,
+  // pub bound: Option<Complex<String>>,
 }
 
 #[derive(Debug, FromAttributes)]
@@ -29,36 +31,40 @@ pub struct ContainerAttrs {
 pub struct VariantAttrs {
   pub rename: Option<Complex<String>>,
   pub rename_all: Option<Complex<Inflection>>,
-  pub alias: Option<String>,
   pub skip: Option<()>,
   pub skip_serializing: Option<()>,
   pub skip_deserializing: Option<()>,
-  pub with: Option<String>,
-  pub serialize_with: Option<String>,
-  pub deserialize_with: Option<String>,
-  pub bound: Option<Complex<String>>,
-  pub borrow: Option<UnitOr<String>>,
-  pub other: Option<()>,
   pub untagged: Option<()>,
+
+  // unused
+  // pub alias: Option<String>,
+  // pub with: Option<String>,
+  // pub serialize_with: Option<String>,
+  // pub deserialize_with: Option<String>,
+  // pub bound: Option<Complex<String>>,
+  // pub borrow: Option<UnitOr<String>>,
+  // pub other: Option<()>,
 }
 
 #[derive(Debug, FromAttributes)]
 #[darling(attributes(serde, shape))]
 pub struct FieldAttrs {
   pub rename: Option<Complex<String>>,
-  pub alias: Option<String>,
   pub default: Option<UnitOr<String>>,
   pub flatten: Option<()>,
   pub skip: Option<()>,
   pub skip_serializing: Option<()>,
   pub skip_deserializing: Option<()>,
   pub skip_serializing_if: Option<String>,
-  pub with: Option<String>,
-  pub serialize_with: Option<String>,
-  pub deserialize_with: Option<String>,
-  pub borrow: Option<UnitOr<String>>, 
-  pub bound: Option<Complex<String>>,
-  pub getter: Option<String>,
+  
+  // unused
+  // pub alias: Option<String>,
+  // pub with: Option<String>,
+  // pub serialize_with: Option<String>,
+  // pub deserialize_with: Option<String>,
+  // pub borrow: Option<UnitOr<String>>, 
+  // pub bound: Option<Complex<String>>,
+  // pub getter: Option<String>,
 }
 
 
@@ -78,7 +84,7 @@ pub enum Inflection {
   ScreamingSnake,
   #[darling(rename = "kebab-case")]
   Kebab,
-  #[darling(rename = "SREAMING-KEBAB-CASE")]
+  #[darling(rename = "SCREAMING-KEBAB-CASE")]
   ScreamingKebab,
 }
 

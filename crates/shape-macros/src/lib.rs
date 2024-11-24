@@ -1,8 +1,8 @@
 mod attr;
 
 use attr::{Complex, ContainerAttrs, FieldAttrs, VariantAttrs};
-use darling::{ast::GenericParamExt, usage::{GenericsExt, UsesTypeParams}, FromAttributes}; 
-use syn::{spanned::Spanned, DeriveInput, LitStr, Variant, WhereClause};
+use darling::{ast::GenericParamExt, FromAttributes}; 
+use syn::{spanned::Spanned, DeriveInput, GenericArgument, LitStr, Variant};
 use quote::quote;
 
 #[proc_macro_derive(Shape, attributes(serde, shape))]
@@ -110,14 +110,14 @@ fn shape_inner(input: DeriveInput) -> Result<proc_macro2::TokenStream, darling::
           None => {},
           Some(complex) => match complex {
             Complex::Single(rename) => {
-              let name = LitStr::new(&rename, variant.ident.span());
+              let name = LitStr::new(rename, variant.ident.span());
               get_name = quote! {
                 let name = #name;
               }
             },
             Complex::Complex { serialize, deserialize } => {
               if let Some(serialize) = serialize {
-                let renamed = LitStr::new(&serialize, variant.ident.span());
+                let renamed = LitStr::new(serialize, variant.ident.span());
                 get_name = quote! {
                   #get_name;
                   if options.is_serialize() {
@@ -127,7 +127,7 @@ fn shape_inner(input: DeriveInput) -> Result<proc_macro2::TokenStream, darling::
               }
 
               if let Some(deserialize) = deserialize {
-                let renamed = LitStr::new(&deserialize, variant.ident.span());
+                let renamed = LitStr::new(deserialize, variant.ident.span());
                 get_name = quote! {
                   #get_name;
                   if options.is_deserialize() {
@@ -153,7 +153,7 @@ fn shape_inner(input: DeriveInput) -> Result<proc_macro2::TokenStream, darling::
             } else {
               match &container_attrs.tag {
                 Some(tag) => {
-                  let tag = LitStr::new(&tag, variant.span());
+                  let tag = LitStr::new(tag, variant.span());
                   quote!{ ::shape::Type::Object(
                     ::shape::Object {
                       properties: ::shape::indexmap::IndexMap::from([
@@ -295,7 +295,11 @@ fn fields_unnamed(container_attrs: &ContainerAttrs, _variant_attrs: Option<&Vari
     let out = {
       if field_attrs.skip.is_some() {
         quote!{
-          ::shape::Type::Null
+          // empty tuple
+          ::shape::Type::Tuple(Tuple {
+            items: vec![],
+            rest: None,
+          })
         }
       } else {
         quote! {
@@ -330,7 +334,11 @@ fn fields_unnamed(container_attrs: &ContainerAttrs, _variant_attrs: Option<&Vari
 
     for field in fields.unnamed.iter() { 
       let field_attrs = FieldAttrs::from_attributes(&field.attrs)?;
-    
+
+      if field_attrs.skip.is_some() {
+        continue;
+      }
+
       let skip_serializing = field_attrs.skip_serializing.is_some();
       let skip_deserializing = field_attrs.skip_deserializing.is_some();
       let has_default = field_attrs.default.is_some();
@@ -415,18 +423,7 @@ fn fields_named(container_attrs: &ContainerAttrs, variant_attrs: Option<&Variant
     for field in &fields.named {
       let field_attrs = FieldAttrs::from_attributes(&field.attrs)?;
 
-      // TODO: there must be a better way to do this
-      let is_option = match &field.ty {
-        syn::Type::Path(path) => {
-          match path.path.segments.iter().last() {
-            Some(last) => {
-              last.ident == "Option"  
-            }
-            None => false,
-          }
-        },
-        _ => false,
-      };
+      let is_option = is_option(&field.ty);
 
       if field_attrs.skip.is_some() {
         continue;
@@ -536,7 +533,7 @@ fn fields_named(container_attrs: &ContainerAttrs, variant_attrs: Option<&Variant
                 if let Some(serialize) = serialize {
                   let name = LitStr::new(&serialize, ident.span());
                   get_name = quote!{
-                    #get_name,
+                    #get_name;
                     if options.is_serialize() {
                       name = #name;
                     } 
@@ -546,7 +543,7 @@ fn fields_named(container_attrs: &ContainerAttrs, variant_attrs: Option<&Variant
                 if let Some(deserialize) = deserialize {
                   let name = LitStr::new(&deserialize, ident.span());
                   get_name = quote!{
-                    #get_name,
+                    #get_name;
                     if options.is_deserialize() {
                       name = #name;
                     } 
@@ -732,4 +729,32 @@ fn join_enum_fields(
       }
     }
   }
+}
+
+// TODO: there must be a better way to do this
+fn is_option(ty: &syn::Type) -> bool {
+  let last = match ty {
+    syn::Type::Path(path) => {
+      match path.path.segments.last() {
+        Some(last) => last,
+        None => return false,
+      }
+    },
+    _ => return false,
+  };
+
+  if last.ident != "Option" {
+    return false;
+  }
+
+  let generics = match &last.arguments {
+    syn::PathArguments::AngleBracketed(generics) => generics,
+    _ => return false,
+  };
+  
+  if generics.args.len() != 1 {
+    return false;
+  }
+
+  matches!(&generics.args[0], GenericArgument::Type(_))
 }
