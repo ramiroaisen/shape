@@ -328,9 +328,9 @@ fn fields_unnamed(container_attrs: &ContainerAttrs, _variant_attrs: Option<&Vari
 
   } else {
 
-    let mut list = quote!{
-      let mut list = vec![];
-    };
+    let mut variants = vec![];
+
+    let mut prev_has_default = None;
 
     for field in &fields.unnamed { 
       let field_attrs = FieldAttrs::from_attributes(&field.attrs)?;
@@ -345,44 +345,68 @@ fn fields_unnamed(container_attrs: &ContainerAttrs, _variant_attrs: Option<&Vari
       let container_has_default = container_attrs.default.is_some();
       let skip_serializing_if = field_attrs.skip_serializing_if.is_some();
 
+      if !has_default {
+        if matches!(prev_has_default, Some(true)) {
+          return Err(darling::Error::custom("tuple field with default attr must be the last one or followed by other fields with default attr"))
+        }
+        prev_has_default = Some(false);
+      } else {
+        prev_has_default = Some(true);
+      }
+
       let ty = &field.ty;
       
-      list = quote!{
-        #list
+      variants.push(quote!{
         let ty = <#ty as ::shape::Shape>::shape(options);
         if options.is_serialize() {
           if #skip_serializing {
             // do nothing
           } else if #skip_serializing_if {
-            list.push(::shape::Type::Or(vec![ty, ::shape::Type::Undefined]));
+            let prev = variants.clone();
+            for mut variant in prev {
+              variant.push(ty.clone());
+              variants.push(variant);
+            }
           } else {
-            list.push(ty);
+            for item in variants.iter_mut() {
+              item.push(ty.clone());
+            }
           }
         } else {
           if #skip_deserializing {
             // do nothing
           } else if #has_default || #container_has_default {
-            list.push(::shape::Type::Or(vec![ty, ::shape::Type::Undefined]));
+            let mut last = variants.iter().last().cloned().unwrap();
+            last.push(ty.clone());
+            variants.push(last);
           } else {
-            list.push(ty);
+            let nth = variants.len() - 1;
+            variants.get_mut(nth).unwrap().push(ty.clone());
           }
-        }
-      }
+        };
+      });
     }
 
-    let list = quote! {
-      {
-        #list
-        list
-      }
-    };
-
     let shape = quote! {
-      ::shape::Type::Tuple(::shape::Tuple {
-          items: #list,
-          rest: None,
+      {
+        let mut variants: Vec<Vec<::shape::Type>> = vec![vec![]];
+        #( { #variants }; )*
+        if variants.len() == 1 {
+          ::shape::Type::Tuple(::shape::Tuple {
+            items: variants.pop().unwrap(),
+            rest: None,
+          })
+        } else {
+          ::shape::Type::Or(
+            variants.into_iter().map(|items| {
+              ::shape::Type::Tuple(::shape::Tuple {
+                items,
+                rest: None,
+              })
+            }).collect::<Vec<::shape::Type>>()
+          )
         }
-      )
+      }
     };
 
     Ok(shape)

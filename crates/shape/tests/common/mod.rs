@@ -9,6 +9,8 @@ macro_rules! eq {
 
     if a != b {
       ::text_diff::print_diff(&debug_a, &debug_b, " ");
+      eprintln!("a = {:?}", a);
+      eprintln!("b = {:?}", b);
       panic!("$a != $b");
     }
   };

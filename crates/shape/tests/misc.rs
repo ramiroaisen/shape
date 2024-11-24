@@ -1,6 +1,7 @@
 mod common;
 
 use indexmap::IndexMap;
+use serde::Serialize;
 use shape::{Array, Literal, Object, Property, Shape, ShapeOptions, Tuple, Type};
 
 #[test]
