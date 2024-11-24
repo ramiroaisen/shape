@@ -117,4 +117,4 @@ jobs:
           cache-provider: "github"
 
       - name: Test
-        run: just ci-test
+        run: just test
