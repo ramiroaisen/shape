@@ -1,7 +1,7 @@
 use darling::{FromAttributes, FromMeta};
 use syn::Type;
 
-#[derive(Debug, FromAttributes)]
+#[derive(Debug, Default,FromAttributes)]
 #[darling(attributes(serde, shape))]
 pub struct ContainerAttrs {
   pub rename_all: Option<Complex<Inflection>>,
@@ -26,7 +26,7 @@ pub struct ContainerAttrs {
   // pub bound: Option<Complex<String>>,
 }
 
-#[derive(Debug, FromAttributes)]
+#[derive(Debug, Default,FromAttributes)]
 #[darling(attributes(serde, shape))]
 pub struct VariantAttrs {
   pub rename: Option<Complex<String>>,
@@ -46,7 +46,7 @@ pub struct VariantAttrs {
   // pub other: Option<()>,
 }
 
-#[derive(Debug, FromAttributes)]
+#[derive(Debug, Default, FromAttributes)]
 #[darling(attributes(serde, shape))]
 pub struct FieldAttrs {
   pub rename: Option<Complex<String>>,
@@ -103,7 +103,6 @@ impl Inflection {
     }
   }
 }
-
 
 #[derive(Debug, FromMeta)]
 pub struct SerDe<T> {

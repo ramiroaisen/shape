@@ -758,6 +758,7 @@ fn join_enum_fields(
 
 // TODO: there must be a better way to do this
 fn is_option(ty: &syn::Type) -> bool {
+  
   let last = match ty {
     syn::Type::Path(path) => {
       match path.path.segments.last() {
@@ -782,4 +783,23 @@ fn is_option(ty: &syn::Type) -> bool {
   }
 
   matches!(&generics.args[0], GenericArgument::Type(_))
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn test_is_option() {
+    assert!(is_option(&syn::parse_str::<syn::Type>("::core::option::Option<i32>").unwrap()));
+    assert!(is_option(&syn::parse_str::<syn::Type>("::std::option::Option<i32>").unwrap()));
+    assert!(is_option(&syn::parse_str::<syn::Type>("Option<i32>").unwrap()));
+    assert!(is_option(&syn::parse_str::<syn::Type>("option::Option<i32>").unwrap()));
+    assert!(is_option(&syn::parse_str::<syn::Type>("Self::Option<i32>").unwrap()));
+    assert!(!is_option(&syn::parse_str::<syn::Type>("i32").unwrap()));
+    assert!(!is_option(&syn::parse_str::<syn::Type>("Option").unwrap()));
+    assert!(!is_option(&syn::parse_str::<syn::Type>("Option<'a, u64>").unwrap()));
+    assert!(!is_option(&syn::parse_str::<syn::Type>("::core::option::Option<'a, u64>").unwrap()));
+    assert!(!is_option(&syn::parse_str::<syn::Type>("::core::option::Option<'a>").unwrap()));
+  }
 }
