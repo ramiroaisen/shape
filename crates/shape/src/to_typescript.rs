@@ -94,13 +94,20 @@ impl ToTypescript for Type {
       Type::Object(object) => object.to_typescript(),
       Type::Record(record) => record.to_typescript(),
       Type::And(types) => {
+        if types.is_empty() {
+          return String::from("never");  
+        }
         let inner = types.iter().map(|t| t.to_typescript()).collect::<Vec<String>>().join(" & ");
         format!("({})", inner)
       }
       Type::Or(types) => {
+        if types.is_empty() {
+          return String::from("never");  
+        }
         let inner = types.iter().map(|t| t.to_typescript()).collect::<Vec<String>>().join(" | ");
         format!("({})", inner)
       }
-      Type::Custom(custom) => custom.clone(),    }
+      Type::Custom(custom) => custom.clone(),
+    }
   }
 }

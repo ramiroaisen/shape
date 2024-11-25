@@ -64,12 +64,12 @@ impl ShapeOptions {
 /// This type tries to match the way JSON serialized Rust structs can be represented in typescript
 #[derive(Debug, Clone, PartialEq)]
 pub enum Type {
-  String,
-  Number,
-  Boolean,
   Null,
   Undefined,
   Never,
+  Boolean,
+  Number,
+  String,
   Literal(Literal),
   Tuple(Tuple),
   Array(Array),
@@ -107,16 +107,16 @@ pub struct Record {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Property {
-  pub ty: Type,
   pub optional: bool,
   pub readonly: bool,
+  pub ty: Type,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Literal {
-  String(String),
-  Number(f64),
   Boolean(bool),
+  Number(f64),
+  String(String),
 }
 
 macro_rules! impl_ty {

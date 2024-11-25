@@ -219,3 +219,15 @@ fn optional() {
 
   eq!(shape, "{key?:string;}");
 }
+
+#[test]
+fn empty_or() {
+  let shape = Type::Or(vec![]);
+  eq!(shape, "never");
+}
+
+#[test]
+fn empty_and() {
+  let shape = Type::And(vec![]);
+  eq!(shape, "never");
+}
