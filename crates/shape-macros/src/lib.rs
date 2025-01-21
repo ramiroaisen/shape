@@ -347,7 +347,10 @@ fn fields_unnamed(container_attrs: &ContainerAttrs, _variant_attrs: Option<&Vari
 
       if !has_default {
         if matches!(prev_has_default, Some(true)) {
-          return Err(darling::Error::custom("tuple field with default attr must be the last one or followed by other fields with default attr"))
+          return Err(
+            darling::Error::custom("tuple field with default attr must be the last one or followed by other fields with default attr")
+              .with_span(field)
+          )
         }
         prev_has_default = Some(false);
       } else {
@@ -432,7 +435,10 @@ fn fields_named(container_attrs: &ContainerAttrs, variant_attrs: Option<&Variant
         };
         return Ok(decl);
       } else {
-        return Err(darling::Error::custom("transparent structs can only have one field"))
+        return Err(
+          darling::Error::custom("transparent structs can only have one field")
+            .with_span(fields)
+        )
       }
     }
 
@@ -689,7 +695,7 @@ fn join_enum_fields(
           Some(content) => {
             let content = LitStr::new(content, variant.span());
             quote! {
-              ::shape::Type::Object(Object {
+              ::shape::Type::Object(::shape::Object {
                 properties: ::shape::indexmap::IndexMap::from([
                   (
                     String::from(#tag),
@@ -716,7 +722,7 @@ fn join_enum_fields(
           None => {
             quote! {
               ::shape::Type::And(vec![
-                ::shape::Type::Object(Object {
+                ::shape::Type::Object(::shape::Object {
                   properties: ::shape::indexmap::IndexMap::from([
                     (
                       String::from(#tag),

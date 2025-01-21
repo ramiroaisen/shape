@@ -7,6 +7,12 @@ edition = "2021"
 indexmap = "2.6.0"
 serde_json = "1.0.133"
 shape-macros = { path = "../shape-macros" }
+compact_str = { version = "0.8", optional = true }
+time = { version = "0.3.37", optional = true }
+
+[features]
+compact-str-0_8 = ["dep:compact_str"]
+time-0_3 = ["dep:time"]
 
 [dev-dependencies]
 regex = "1.11.1"

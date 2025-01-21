@@ -148,6 +148,13 @@ impl_ty!(f64, Type::Number);
 impl_ty!(bool, Type::Boolean);
 impl_ty!((), Type::Null);
 
+#[cfg(feature = "time-0_3")]
+impl_ty!(time::PrimitiveDateTime, Type::String);
+#[cfg(feature = "time-0_3")]
+impl_ty!(time::OffsetDateTime, Type::String);
+#[cfg(feature = "compact-str-0_8")]
+impl_ty!(compact_str::CompactString, Type::String);
+
 impl<T: Shape + ?Sized> Shape for &T {
   fn shape(options: &ShapeOptions) -> Type {
     T::shape(options)

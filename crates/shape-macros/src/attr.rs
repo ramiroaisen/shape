@@ -36,14 +36,22 @@ pub struct VariantAttrs {
   pub skip_deserializing: Option<()>,
   pub untagged: Option<()>,
 
+  // altough unused, this fields must be present to avoid giving an erorr un valid serde attrs
   // unused
-  // pub alias: Option<String>,
-  // pub with: Option<String>,
-  // pub serialize_with: Option<String>,
-  // pub deserialize_with: Option<String>,
-  // pub bound: Option<Complex<String>>,
-  // pub borrow: Option<UnitOr<String>>,
-  // pub other: Option<()>,
+  #[allow(unused)]
+  pub alias: Option<String>,
+  #[allow(unused)]
+  pub with: Option<String>,
+  #[allow(unused)]
+  pub serialize_with: Option<String>,
+  #[allow(unused)]
+  pub deserialize_with: Option<String>,
+  #[allow(unused)]
+  pub bound: Option<Complex<String>>,
+  #[allow(unused)]
+  pub borrow: Option<UnitOr<String>>,
+  #[allow(unused)]
+  pub other: Option<()>,
 }
 
 #[derive(Debug, Default, FromAttributes)]
@@ -56,15 +64,23 @@ pub struct FieldAttrs {
   pub skip_serializing: Option<()>,
   pub skip_deserializing: Option<()>,
   pub skip_serializing_if: Option<String>,
-  
+
   // unused
-  // pub alias: Option<String>,
-  // pub with: Option<String>,
-  // pub serialize_with: Option<String>,
-  // pub deserialize_with: Option<String>,
-  // pub borrow: Option<UnitOr<String>>, 
-  // pub bound: Option<Complex<String>>,
-  // pub getter: Option<String>,
+  // altough unused, this fields must be present to avoid giving an erorr un valid serde attrs
+  #[allow(unused)]
+  pub alias: Option<String>,
+  #[allow(unused)]
+  pub with: Option<String>,
+  #[allow(unused)]
+  pub serialize_with: Option<String>,
+  #[allow(unused)]
+  pub deserialize_with: Option<String>,
+  #[allow(unused)]
+  pub borrow: Option<UnitOr<String>>, 
+  #[allow(unused)]
+  pub bound: Option<Complex<String>>,
+  #[allow(unused)]
+  pub getter: Option<String>,
 }
 
 

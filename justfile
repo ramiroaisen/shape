@@ -10,18 +10,6 @@ j := env_var_or_default("J", "8")
 default:
   just --list --unsorted
 
-# build shape bin in debug mode
-ci-build:
-  cargo build
-
-# run cargo integration tests with default features
-ci-integration:
-  cargo test --test "*" -- --test-threads 1
-
-# run cargo unit tests with default features
-ci-unit:
-  cargo test --lib
-
 ci-coverage:
   mkdir -p github-pages/coverage
 
@@ -39,31 +27,9 @@ ci-coverage:
   mv target/llvm-cov-badge/badge.svg github-pages/coverage/badge.svg
   mv target/llvm-cov-lcov/lcov.info github-pages/coverage/lcov.info
 
-# start the previously compiled shape binary
-start:
-  # we use sudo here because in general you will run shape as root, as it has to bind to ports under 1024
-  # also the config.yml we are using internally in development needs to read root owned ssl certificates and bind to privileged ports
-  sudo ./target/release/shape start
-
-# start the previously compiled musl shape binary
-start-musl:
-  sudo ./target/x86_64-unknown-linux-musl/release/shape start
-
 # build shape bin in release mode with default features
 build *args:
   cargo build --release {{args}}
- 
-# build all bins in release mode with default features and musl target
-build-musl:
-  cargo build -j {{j}} --release --target=x86_64-unknown-linux-musl
-
-# build a minimal release bin with default features
-build-min:
-  cargo build -j {{j}} --release --no-default-features --features log-off
-
-# build a minimal release bin with default features and musl target
-build-min-musl:
-  cargo build -j {{j}} --release --no-default-features --features log-off --target=x86_64-unknown-linux-musl
 
 # build the default binary for windows
 build-windows:
@@ -97,10 +63,6 @@ check-all-feat:
 test-all-feat:
   cargo test-all-features
 
-# run the release script, see ./release.mjs
-internal-release: 
-  zx ./release/script/release.mjs
-
 # generate tarpaulin based coverage report
 tarpaulin:
   cargo tarpaulin -j {{j}} --out html --out lcov --engine llvm --output-dir target/tarpaulin/html
@@ -112,7 +74,7 @@ tarpaulin-open:
 # generate grcov based coverage report (collect stage)
 grcov-collect:
   CARGO_INCREMENTAL=0 \
-  RUSTFLAGS='-Cinstrument-coverage --cfg tokio_unstable' \
+  RUSTFLAGS='-Cinstrument-coverage' \
   LLVM_PROFILE_FILE='target/coverage/profraw/cargo-test-%p-%m.profraw' \
   cargo test -j {{j}} -p shape # ignore patches
   
