@@ -55,10 +55,16 @@ impl ToTypescript for Object {
 impl ToTypescript for Record {
   fn to_typescript(&self) -> String {
     format!(
-      "{{ [key: {key}]: {value} }}",
+      "Record<{key}, {value}{or_undefined}>",
       key = self.key.to_typescript(),
-      value = self.value.to_typescript()
+      value = self.value.to_typescript(),
+      or_undefined = if self.optional { "| undefined" } else { "" }
     )
+    // format!(
+    //   "{{ [key: {key}]: {value} }}",
+    //   key = self.key.to_typescript(),
+    //   value = self.value.to_typescript()
+    // )
   }
 }
 

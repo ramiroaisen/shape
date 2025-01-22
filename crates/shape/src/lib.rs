@@ -3,15 +3,15 @@ pub use shape_macros::Shape;
 mod to_typescript;
 pub use to_typescript::ToTypescript;
 mod is_assignable;
-pub use is_assignable::IsAsignable;
 pub use indexmap;
+pub use is_assignable::IsAsignable;
 
+use indexmap::{IndexMap, IndexSet};
 use std::{
   collections::{BTreeMap, BTreeSet, HashMap, HashSet},
   rc::Rc,
   sync::Arc,
 };
-use indexmap::{IndexMap, IndexSet};
 
 /// The shape trait is derived in a type to generate a schema for the (de)serialization of that type
 pub trait Shape {
@@ -33,7 +33,6 @@ pub struct ShapeOptions {
 }
 
 impl ShapeOptions {
- 
   pub fn for_serialize() -> Self {
     Self {
       kind: ShapeOptionsKind::Serialize,
@@ -46,7 +45,7 @@ impl ShapeOptions {
   pub fn for_deserialize() -> Self {
     Self {
       kind: ShapeOptionsKind::Deserialize,
-      option_is_optional: true, 
+      option_is_optional: true,
       option_add_undefined: true,
       option_add_null: true,
     }
@@ -148,6 +147,10 @@ impl_ty!(f64, Type::Number);
 impl_ty!(bool, Type::Boolean);
 impl_ty!((), Type::Null);
 
+impl_ty!(std::net::IpAddr, Type::String);
+impl_ty!(std::net::Ipv4Addr, Type::String);
+impl_ty!(std::net::Ipv6Addr, Type::String);
+
 #[cfg(feature = "time-0_3")]
 impl_ty!(time::PrimitiveDateTime, Type::String);
 #[cfg(feature = "time-0_3")]
@@ -178,11 +181,11 @@ impl<T: Shape> Shape for Option<T> {
   fn shape(options: &ShapeOptions) -> Type {
     let inner = T::shape(options);
     if options.option_add_null && options.option_add_undefined {
-      Type::Or(vec![ inner, Type::Null, Type::Undefined ])
+      Type::Or(vec![inner, Type::Null, Type::Undefined])
     } else if options.option_add_null {
-      Type::Or(vec![ inner, Type::Null ])
+      Type::Or(vec![inner, Type::Null])
     } else if options.option_add_undefined {
-      Type::Or(vec![inner, Type::Undefined ])
+      Type::Or(vec![inner, Type::Undefined])
     } else {
       inner
     }
@@ -220,7 +223,7 @@ macro_rules! impl_map {
     {
       fn shape(options: &ShapeOptions) -> Type {
         Type::Record(Record {
-          optional: false,
+          optional: true,
           readonly: false,
           key: Box::new(<$k>::shape(options)),
           value: Box::new(<$v>::shape(options)),
