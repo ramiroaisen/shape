@@ -158,6 +158,14 @@ impl_ty!(time::OffsetDateTime, Type::String);
 #[cfg(feature = "compact-str-0_8")]
 impl_ty!(compact_str::CompactString, Type::String);
 
+#[cfg(feature = "ordered-float")]
+impl<T> Shape for OrderedFloat<T> {
+  fn shape(_: &ShapeOptions) -> Type {
+    Type::Number
+  }
+}
+
+
 impl<T: Shape + ?Sized> Shape for &T {
   fn shape(options: &ShapeOptions) -> Type {
     T::shape(options)
@@ -237,6 +245,10 @@ macro_rules! impl_map {
 impl_map!(K, V, impl<K: Shape, V: Shape, H> Shape for HashMap<K, V, H>);
 impl_map!(K, V, impl<K: Shape, V: Shape, H> Shape for IndexMap<K, V, H>);
 impl_map!(K, V, impl<K: Shape, V: Shape> Shape for BTreeMap<K, V>);
+#[cfg(feature = "intmap")]
+impl_map!(K, V, impl<K: Shape, V: Shape> Shape for intmap::IntMap<K, V>);
+#[cfg(feature = "inttable")]
+impl_map!(u64, V, impl<V: Shape> Shape for inttable::IntTable<V>);
 
 macro_rules! impl_tuple {
   ($($ty:ident)*) => {
