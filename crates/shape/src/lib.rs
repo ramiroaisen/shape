@@ -157,9 +157,11 @@ impl_ty!(time::PrimitiveDateTime, Type::String);
 impl_ty!(time::OffsetDateTime, Type::String);
 #[cfg(feature = "compact-str-0_8")]
 impl_ty!(compact_str::CompactString, Type::String);
+#[cfg(feature = "bson")]
+impl_ty!(bson::DateTime, Type::Custom("Date".to_string()));
 
 #[cfg(feature = "ordered-float")]
-impl<T> Shape for OrderedFloat<T> {
+impl<T> Shape for ordered_float::OrderedFloat<T> {
   fn shape(_: &ShapeOptions) -> Type {
     Type::Number
   }
