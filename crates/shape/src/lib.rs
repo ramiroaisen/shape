@@ -226,6 +226,8 @@ impl_slice!(T, impl<T: Shape> Shape for Vec<T>);
 impl_slice!(T, impl<T: Shape, H> Shape for HashSet<T, H>);
 impl_slice!(T, impl<T: Shape, H> Shape for IndexSet<T, H>);
 impl_slice!(T, impl<T: Shape> Shape for BTreeSet<T>);
+#[cfg(feature = "indexmap")]
+impl_slice!(T, impl<T: Shape> Shape for indexmap::IndexSet<T>);
 
 macro_rules! impl_map {
   ($k:ty, $v:ty, $($tt:tt)*) => {
@@ -251,6 +253,9 @@ impl_map!(K, V, impl<K: Shape, V: Shape> Shape for BTreeMap<K, V>);
 impl_map!(K, V, impl<K: Shape, V: Shape> Shape for intmap::IntMap<K, V>);
 #[cfg(feature = "inttable")]
 impl_map!(u64, V, impl<V: Shape> Shape for inttable::IntTable<V>);
+#[cfg(feature = "indexmap")]
+impl_map!(K, V, impl<K: Shape, V: Shape, H> Shape for indexmap::IndexMap<K, V, H>);
+
 
 macro_rules! impl_tuple {
   ($($ty:ident)*) => {
