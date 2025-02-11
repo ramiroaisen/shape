@@ -2,7 +2,9 @@ mod common;
 
 use std::collections::{BTreeSet, HashSet};
 
+#[cfg(feature = "indexmap")]
 use indexmap::IndexSet;
+
 use shape::{Array, Shape, ShapeOptions, Tuple, Type};
 
 #[test]
@@ -24,7 +26,9 @@ fn array_containers() {
   eq!(<BTreeSet<String>>::shape(&ShapeOptions::for_serialize()), expected);
   eq!(<BTreeSet<String>>::shape(&ShapeOptions::for_deserialize()), expected);
 
+  #[cfg(feature = "indexmap")]
   eq!(<IndexSet<String>>::shape(&ShapeOptions::for_serialize()), expected);
+  #[cfg(feature = "indexmap")]
   eq!(<IndexSet<String>>::shape(&ShapeOptions::for_deserialize()), expected);
 }
 
