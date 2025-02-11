@@ -55,7 +55,7 @@ impl ToTypescript for Object {
 impl ToTypescript for Record {
   fn to_typescript(&self) -> String {
     if self.optional {
-      format!("Partial<Record<string  {}>>", self.value.to_typescript())
+      format!("Partial<Record<string, {}>>", self.value.to_typescript())
     } else {
       format!("Record<string, {}>", self.value.to_typescript())
     }
