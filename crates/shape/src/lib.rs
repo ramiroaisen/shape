@@ -1,12 +1,13 @@
 pub use shape_macros::Shape;
 
 mod to_typescript;
-pub use to_typescript::ToTypescript;
 mod is_assignable;
+
+pub use to_typescript::ToTypescript;
 pub use indexmap;
 pub use is_assignable::IsAsignable;
 
-use indexmap::{IndexMap, IndexSet};
+use indexmap::IndexMap;
 use std::{
   collections::{BTreeMap, BTreeSet, HashMap, HashSet},
   rc::Rc,
@@ -224,7 +225,6 @@ macro_rules! impl_slice {
 impl_slice!(T, impl<T: Shape> Shape for [T]);
 impl_slice!(T, impl<T: Shape> Shape for Vec<T>);
 impl_slice!(T, impl<T: Shape, H> Shape for HashSet<T, H>);
-impl_slice!(T, impl<T: Shape, H> Shape for IndexSet<T, H>);
 impl_slice!(T, impl<T: Shape> Shape for BTreeSet<T>);
 #[cfg(feature = "indexmap")]
 impl_slice!(T, impl<T: Shape> Shape for indexmap::IndexSet<T>);
@@ -247,7 +247,6 @@ macro_rules! impl_map {
 
 // TODO: add generics for Alloc in nightly
 impl_map!(K, V, impl<K: Shape, V: Shape, H> Shape for HashMap<K, V, H>);
-impl_map!(K, V, impl<K: Shape, V: Shape, H> Shape for IndexMap<K, V, H>);
 impl_map!(K, V, impl<K: Shape, V: Shape> Shape for BTreeMap<K, V>);
 #[cfg(feature = "intmap")]
 impl_map!(K, V, impl<K: Shape, V: Shape> Shape for intmap::IntMap<K, V>);
