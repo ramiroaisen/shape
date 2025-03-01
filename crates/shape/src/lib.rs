@@ -9,9 +9,7 @@ pub use is_assignable::IsAsignable;
 
 use indexmap::IndexMap;
 use std::{
-  collections::{BTreeMap, BTreeSet, HashMap, HashSet},
-  rc::Rc,
-  sync::Arc,
+  borrow::Cow, collections::{BTreeMap, BTreeSet, HashMap, HashSet}, rc::Rc, sync::Arc
 };
 
 /// The shape trait is derived in a type to generate a schema for the (de)serialization of that type
@@ -151,6 +149,13 @@ impl_ty!((), Type::Null);
 impl_ty!(std::net::IpAddr, Type::String);
 impl_ty!(std::net::Ipv4Addr, Type::String);
 impl_ty!(std::net::Ipv6Addr, Type::String);
+
+impl<T: Shape + ToOwned> Shape for Cow<'_, T> {
+  fn shape(options: &ShapeOptions) -> Type {
+    T::shape(options)
+  }
+}
+
 
 #[cfg(feature = "time-0_3")]
 impl_ty!(time::PrimitiveDateTime, Type::String);
