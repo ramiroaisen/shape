@@ -180,19 +180,6 @@ impl<T: Shape + ?Sized> Shape for &T {
   }
 }
 
-macro_rules! impl_inner {
-  ($ty:ty, $inner:ident) => {
-    impl<$inner> Shape for $ty
-    where
-      $inner: Shape,
-    {
-      fn shape(options: &ShapeOptions) -> Type {
-        <$inner>::shape(options)
-      }
-    }
-  };
-}
-
 impl<T: Shape> Shape for Option<T> {
   fn shape(options: &ShapeOptions) -> Type {
     let inner = T::shape(options);
@@ -208,10 +195,24 @@ impl<T: Shape> Shape for Option<T> {
   }
 }
 
+macro_rules! impl_inner {
+  ($ty:ty, $inner:ident) => {
+    impl<$inner> Shape for $ty
+    where
+      $inner: Shape + ?Sized,
+    {
+      fn shape(options: &ShapeOptions) -> Type {
+        <$inner>::shape(options)
+      }
+    }
+  };
+}
+
 // TODO: add generics for Alloc in nightly
 impl_inner!(Box<T>, T);
 impl_inner!(Rc<T>, T);
 impl_inner!(Arc<T>, T);
+
 
 macro_rules! impl_slice {
   ($inner:ty, $($tt:tt)*) => {
