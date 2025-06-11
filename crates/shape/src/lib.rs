@@ -304,6 +304,12 @@ where
   }
 }
 
+impl Shape for serde_json::Value {
+  fn shape(_: &ShapeOptions) -> Type {
+    Type::Custom(String::from("any"))
+  }
+}
+
 // #[doc(hidden)]
 // pub mod internal {
 //     use std::any::TypeId;
