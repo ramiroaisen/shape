@@ -69,6 +69,7 @@ fn shape_inner(input: DeriveInput) -> Result<proc_macro2::TokenStream, darling::
         let ident = LitStr::new(&variant.ident.to_string(), variant.ident.span());
 
         let mut get_name = quote! {
+          #[allow(unused)]
           let mut name = #ident;
         };
 
@@ -499,6 +500,7 @@ fn fields_named(container_attrs: &ContainerAttrs, variant_attrs: Option<&Variant
         let property_name = LitStr::new(&ident.to_string(), ident.span());  
 
         let mut get_name = quote!{
+          #[allow(unused)]
           let mut name = #property_name;
         };
 
